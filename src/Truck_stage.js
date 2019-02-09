@@ -29,7 +29,7 @@ class Item_d extends React.Component {
     isDragging: false
   };
   render() {
-    const { item, updateItem } = this.props;
+    const { item, updateItem, selected } = this.props;
     console.log("items props", this.props);
     return (
       <Group>
@@ -38,7 +38,7 @@ class Item_d extends React.Component {
           y={item.y}
           width={item.width}
           height={item.length}
-          fill={"#ff4136"}
+          fill={selected ? "#ff4136" : "#33b5e5"}
           draggable
           onDragStart={() => {
             this.setState({
@@ -51,6 +51,7 @@ class Item_d extends React.Component {
             this.setState({
               isDragging: false
             });
+            console.log(this.fill);
           }}
         />
         <Text
@@ -65,11 +66,14 @@ class Item_d extends React.Component {
 
 export default class Truck_stage extends React.Component {
   render() {
-    const { truck, items, updateItem } = this.props;
+    const { truck, items, updateItem, selectedIndex } = this.props;
     const itemComponents = items.map((it, i) => (
       <Item_d
         item={it}
-        updateItem={(newX, newY) => updateItem(i, newX, newY)}
+        selected={i === selectedIndex}
+        updateItem={(newX, newY, selected) =>
+          updateItem(i, newX, newY, selected)
+        }
       />
     ));
 

@@ -27,6 +27,7 @@ class App extends Component {
   state = {
     truck: truck,
     items: items,
+    selectedIndex: 0,
     inventory: inventory
   };
 
@@ -46,7 +47,8 @@ class App extends Component {
       oldItem.stackable
     );
     newState[i] = newItem;
-    this.setState({ items: newState });
+    console.log(i);
+    this.setState({ items: newState, selectedIndex: i });
   };
 
   handleTruckSubmit(event) {
@@ -83,6 +85,15 @@ class App extends Component {
     );
     const newState = [...this.state.inventory, newItem];
     this.setState({ inventory: newState });
+  }
+
+  handleItemRemove(event) {
+    event.preventDefault();
+    const newState = [...this.state.items];
+    console.log("before", newState);
+    newState.splice(this.state.selectedIndex, 1);
+    console.log("after", newState);
+    this.setState({ items: newState });
   }
 
   render() {
@@ -127,6 +138,7 @@ class App extends Component {
                     truck={this.state.truck}
                     items={this.state.items}
                     updateItem={this.updateItem}
+                    selectedIndex={this.state.selectedIndex}
                   />
                 </Card.Body>
               </Card>
@@ -209,14 +221,7 @@ class App extends Component {
               <Card className="remitem">
                 <Card.Header as="h5">Remove Item</Card.Header>
                 <Card.Body>
-                  <Form onSubmit={e => this.handleItemSubmit(e)}>
-                    <Row>
-                      <Col>
-                        <Form.Group controlId="itemName">
-                          <Form.Control type="input" placeholder="Name" />
-                        </Form.Group>
-                      </Col>
-                    </Row>
+                  <Form onSubmit={e => this.handleItemRemove(e)}>
                     <Row>
                       <Col>
                         <Button variant="danger" type="submit" block>
