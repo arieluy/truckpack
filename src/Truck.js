@@ -4,7 +4,5 @@ export default class Truck {
   	this.width = width;
   	this.height = height;
     this.items = [];
-  }  
-
-
+  }
 }
