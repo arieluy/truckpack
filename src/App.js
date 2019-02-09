@@ -99,24 +99,56 @@ class App extends Component {
         </Navbar>
         <Container className="space">
           <Row>
-            <Col md={3}>
-              <Card className="items">
-                <Card.Header as="h5">Items</Card.Header>
+            <Col md={8} className="truck">
+              <Card>
+                <Card.Header as="h5">Truck</Card.Header>
                 <Card.Body>
-                  <ListGroup variant="flush">
-                    <ListGroup.Item action href="#link1">
-                      Alpha
-                    </ListGroup.Item>
-                    <ListGroup.Item action href="#link2">
-                      Beta
-                    </ListGroup.Item>
-                    <ListGroup.Item action href="#link3">
-                      2x 108s
-                    </ListGroup.Item>
-                  </ListGroup>
+                  <Truck_stage
+                    truck={this.state.truck}
+                    items={this.state.items}
+                    updateItem={this.updateItem}
+                  />
                 </Card.Body>
               </Card>
-              <Card className="additem">
+            </Col>
+            <Col md={4} className="dims">
+              <Card>
+                <Card.Header as="h5">Truck Dimensions</Card.Header>
+                <Card.Body>
+                  <Card.Text>
+                    <Form onSubmit={e => this.handleTruckSubmit(e)}>
+                      <Row>
+                        <Col>
+                          <Form.Group controlId="truckL">
+                            <Form.Label>Length</Form.Label>
+                            <Form.Control type="input" placeholder="L" />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group controlId="truckW">
+                            <Form.Label>Width</Form.Label>
+                            <Form.Control type="input" placeholder="W" />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group controlId="truckH">
+                            <Form.Label>Height</Form.Label>
+                            <Form.Control type="input" placeholder="H" />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Button variant="primary" type="submit" block>
+                            Enter
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            <Card className="additem">
                 <Card.Header as="h5">Add Item</Card.Header>
                 <Card.Body>
                   <Form onSubmit={e => this.handleItemSubmit(e)}>
@@ -154,55 +186,25 @@ class App extends Component {
                   </Form>
                 </Card.Body>
               </Card>
-            </Col>
-            <Col md={6} className="truck">
-              <Card>
-                <Card.Header as="h5">Truck</Card.Header>
+              <Card className="remitem">
+                <Card.Header as="h5">Remove Item</Card.Header>
                 <Card.Body>
-                  <Truck_stage
-                    truck={this.state.truck}
-                    items={this.state.items}
-                    updateItem={this.updateItem}
-                  />
-                  <pre>{JSON.stringify(this.state, null, 4)}</pre>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3} className="dims">
-              <Card>
-                <Card.Header as="h5">Truck Dimensions</Card.Header>
-                <Card.Body>
-                  <Card.Text>
-                    <Form onSubmit={e => this.handleTruckSubmit(e)}>
-                      <Row>
-                        <Col>
-                          <Form.Group controlId="truckL">
-                            <Form.Label>Length</Form.Label>
-                            <Form.Control type="input" placeholder="L" />
-                          </Form.Group>
-                        </Col>
-                        <Col>
-                          <Form.Group controlId="truckW">
-                            <Form.Label>Width</Form.Label>
-                            <Form.Control type="input" placeholder="W" />
-                          </Form.Group>
-                        </Col>
-                        <Col>
-                          <Form.Group controlId="truckH">
-                            <Form.Label>Height</Form.Label>
-                            <Form.Control type="input" placeholder="H" />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <Button variant="primary" type="submit" block>
-                            Enter
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </Card.Text>
+                  <Form onSubmit={e => this.handleItemSubmit(e)}>
+                    <Row>
+                      <Col>
+                        <Form.Group controlId="itemName">
+                          <Form.Control type="input" placeholder="Name" />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Button variant="danger" type="submit" block>
+                          Remove Item
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
                 </Card.Body>
               </Card>
             </Col>

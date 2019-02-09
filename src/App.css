@@ -8,10 +8,10 @@
 .dims {
 
 }
-
-.items {
+.additem {
+  margin-top: 30px;
 }
 
-.additem {
+.remitem {
   margin-top: 30px;
 }
