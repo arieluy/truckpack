@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Stage, Layer, Rect, Text } from 'react-konva';
+import { Stage, Layer, Rect, Text, Group } from 'react-konva';
 import Konva from 'konva';
 import Item from './Item';
 import Truck from './Truck';
@@ -32,6 +32,7 @@ class Item_d extends React.Component {
     const {item} = this.props;
     console.log("items props", this.props);
     return (
+      <>
       <Rect
         x={item.x}
         y={item.y}
@@ -50,11 +51,30 @@ class Item_d extends React.Component {
           });
         }} 
       />
+      <Text
+        text={item.name}
+        x={item.x}
+        y={item.y}
+      />
+      <> 
     );
   }
 }
 
 class App extends Component {
+  state = {
+    truckHeight: 0,
+    truckWidth: 0,
+    truckLength: 0,
+    items: []
+  };
+
+  _ updateItems=(i, newItem)=> {
+    newState = [...this.state.items];
+    newState[i] = newItem;
+    this.setState({items: newState})
+  }
+
   render() {
     const items = [];
     const truck = new Truck(2*240,2*96,2*84,items);
