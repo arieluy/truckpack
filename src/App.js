@@ -20,11 +20,14 @@ const items = [];
 const truck = new Truck(2 * 240, 2 * 96, 2 * 84, items);
 const item = new Item(100, 100, 100, 10, 10, 10, "item", true);
 items.push(item);
+const INCH_TO_PIXEL = 5;
+const inventory = [];
 
 class App extends Component {
   state = {
     truck: truck,
-    items: items
+    items: items,
+    inventory: inventory
   };
 
   updateItem = (i, newX, newY) => {
@@ -45,6 +48,42 @@ class App extends Component {
     newState[i] = newItem;
     this.setState({ items: newState });
   };
+
+  handleTruckSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const w = Number(form.elements[1].value);
+    const h = Number(form.elements[2].value);
+    const l = Number(form.elements[0].value);
+    const newTruck = new Truck(
+      INCH_TO_PIXEL * l,
+      INCH_TO_PIXEL * w,
+      INCH_TO_PIXEL * h,
+      []
+    );
+    this.setState({ truck: newTruck });
+  }
+
+  handleItemSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const name = form.elements[0].value;
+    const l = Number(form.elements[1].value);
+    const w = Number(form.elements[2].value);
+    const h = Number(form.elements[3].value);
+    const newItem = new Item(
+      INCH_TO_PIXEL * l,
+      INCH_TO_PIXEL * w,
+      INCH_TO_PIXEL * h,
+      20,
+      20,
+      0,
+      name,
+      false
+    );
+    const newState = [...this.state.items, newItem];
+    this.setState({ items: newState });
+  }
 
   render() {
     return (
@@ -80,7 +119,7 @@ class App extends Component {
               <Card className="additem">
                 <Card.Header as="h5">Add Item</Card.Header>
                 <Card.Body>
-                  <Form>
+                  <Form onSubmit={e => this.handleItemSubmit(e)}>
                     <Row>
                       <Col>
                         <Form.Group controlId="itemName">
@@ -134,7 +173,7 @@ class App extends Component {
                 <Card.Header as="h5">Truck Dimensions</Card.Header>
                 <Card.Body>
                   <Card.Text>
-                    <Form>
+                    <Form onSubmit={e => this.handleTruckSubmit(e)}>
                       <Row>
                         <Col>
                           <Form.Group controlId="truckL">
