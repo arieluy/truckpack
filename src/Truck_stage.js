@@ -72,6 +72,7 @@ export default class Truck_stage extends React.Component {
         updateItem={(newX, newY) => updateItem(i, newX, newY)}
       />
     ));
+
     return (
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>

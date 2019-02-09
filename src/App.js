@@ -81,11 +81,23 @@ class App extends Component {
       name,
       false
     );
-    const newState = [...this.state.items, newItem];
-    this.setState({ items: newState });
+    const newState = [...this.state.inventory, newItem];
+    this.setState({ inventory: newState });
   }
 
   render() {
+    const inventoryComponents = this.state.inventory.map((it, i) => (
+      <ListGroup.Item
+        action
+        href={"#" + i}
+        onClick={() => {
+          const newState = [...this.state.items, it];
+          this.setState({ items: newState });
+        }}
+      >
+        {it.name}
+      </ListGroup.Item>
+    ));
     return (
       <div className="App">
         <link
@@ -99,7 +111,15 @@ class App extends Component {
         </Navbar>
         <Container className="space">
           <Row>
-            <Col md={8} className="truck">
+            <Col md={3}>
+              <Card className="items">
+                <Card.Header as="h5">Items</Card.Header>
+                <Card.Body>
+                  <ListGroup variant="flush">{inventoryComponents}</ListGroup>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6} className="truck">
               <Card>
                 <Card.Header as="h5">Truck</Card.Header>
                 <Card.Body>
@@ -111,7 +131,7 @@ class App extends Component {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4} className="dims">
+            <Col md={3} className="dims">
               <Card>
                 <Card.Header as="h5">Truck Dimensions</Card.Header>
                 <Card.Body>
@@ -148,7 +168,7 @@ class App extends Component {
                   </Card.Text>
                 </Card.Body>
               </Card>
-            <Card className="additem">
+              <Card className="additem">
                 <Card.Header as="h5">Add Item</Card.Header>
                 <Card.Body>
                   <Form onSubmit={e => this.handleItemSubmit(e)}>
