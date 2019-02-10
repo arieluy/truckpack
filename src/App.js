@@ -16,26 +16,36 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import ListGroup from "react-bootstrap/ListGroup";
 
+const INCH_TO_PIXEL = 5;
+const ITEM_COL = "#33b5e5";
+
 const items = [];
 const truck = new Truck(2 * 240, 2 * 96, 2 * 84, items);
-const item = new Item(100, 100, 100, 10, 10, 10, "item", true);
+const item = new Item(100, 100, 100, 10, 10, 10, "item", "red", true);
 items.push(item);
-const INCH_TO_PIXEL = 5;
 const inventory = [];
+const collidesList = [false];
 
 class App extends Component {
   state = {
     truck: truck,
     items: items,
     selectedIndex: 0,
+    collidesList: collidesList,
     inventory: inventory
   };
 
+  collides = (r1, r2) => {
+    return !(
+      r2.x > r1.x + r1.width ||
+      r2.x + r2.width < r1.x ||
+      r2.y > r1.y + r1.height ||
+      r2.y + r2.height < r1.y
+    );
+  };
   updateItem = (i, newX, newY) => {
     const newState = [...this.state.items];
     const oldItem = newState[i];
-    console.log("newState", newState);
-    console.log("oldItem", oldItem);
     const newItem = new Item(
       oldItem.length,
       oldItem.width,
@@ -44,11 +54,33 @@ class App extends Component {
       newY,
       oldItem.z,
       oldItem.name,
+      oldItem.color,
       oldItem.stackable
     );
     newState[i] = newItem;
-    console.log(i);
     this.setState({ items: newState, selectedIndex: i });
+    const newCollidesList = [...this.state.collidesList].map(it => false);
+    for (let k = 0; k < newState.length; k++) {
+      for (let j = 0; j < newState.length; j++) {
+        if (!(k === j)) {
+          const r1 = newState[k];
+          const r2 = newState[j];
+          var intersect = !(
+            r2.x > r1.x + r1.width ||
+            r2.x + r2.width < r1.x ||
+            r2.y > r1.y + r1.length ||
+            r2.y + r2.length < r1.y
+          );
+          if (intersect) {
+            newCollidesList[j] = true;
+            newCollidesList[k] = true;
+            break;
+          }
+        }
+      }
+    }
+
+    this.setState({ collidesList: newCollidesList });
   };
 
   handleTruckSubmit(event) {
@@ -81,6 +113,7 @@ class App extends Component {
       20,
       0,
       name,
+      ITEM_COL,
       false
     );
     const newState = [...this.state.inventory, newItem];
@@ -90,9 +123,7 @@ class App extends Component {
   handleItemRemove(event) {
     event.preventDefault();
     const newState = [...this.state.items];
-    console.log("before", newState);
     newState.splice(this.state.selectedIndex, 1);
-    console.log("after", newState);
     this.setState({ items: newState });
   }
 
@@ -103,7 +134,9 @@ class App extends Component {
         href={"#" + i}
         onClick={() => {
           const newState = [...this.state.items, it];
-          this.setState({ items: newState });
+          const newCollidesList = [...this.state.collidesList, false];
+
+          this.setState({ items: newState, collidesList: newCollidesList });
         }}
       >
         {it.name}
@@ -139,6 +172,7 @@ class App extends Component {
                     items={this.state.items}
                     updateItem={this.updateItem}
                     selectedIndex={this.state.selectedIndex}
+                    collidesList={this.state.collidesList}
                   />
                 </Card.Body>
               </Card>

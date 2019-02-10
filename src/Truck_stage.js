@@ -28,9 +28,9 @@ class Item_d extends React.Component {
   state = {
     isDragging: false
   };
+
   render() {
-    const { item, updateItem, selected } = this.props;
-    console.log("items props", this.props);
+    const { item, updateItem, selected, collides, items, truck } = this.props;
     return (
       <Group>
         <Rect
@@ -38,7 +38,7 @@ class Item_d extends React.Component {
           y={item.y}
           width={item.width}
           height={item.length}
-          fill={selected ? "#ff4136" : "#33b5e5"}
+          fill={collides ? "red" : selected ? "yellow" : "#33b5e5"}
           draggable
           onDragStart={() => {
             this.setState({
@@ -46,12 +46,27 @@ class Item_d extends React.Component {
             });
           }}
           onDragEnd={e => {
-            console.log("aaa", e);
             updateItem(e.target.x(), e.target.y());
             this.setState({
               isDragging: false
             });
-            console.log(this.fill);
+          }}
+          dragBoundFunc={pos => {
+            const newX =
+              pos.x > truck.width - item.width
+                ? truck.width - item.width
+                : pos.x < 0
+                ? 0
+                : pos.x;
+
+            const newY =
+              pos.y > truck.length - item.length
+                ? truck.length - item.length
+                : pos.y < 0
+                ? 0
+                : pos.y;
+
+            return { x: newX, y: newY };
           }}
         />
         <Text
@@ -66,21 +81,27 @@ class Item_d extends React.Component {
 
 export default class Truck_stage extends React.Component {
   render() {
-    const { truck, items, updateItem, selectedIndex } = this.props;
+    const {
+      truck,
+      items,
+      updateItem,
+      collidesList,
+      selectedIndex
+    } = this.props;
     const itemComponents = items.map((it, i) => (
       <Item_d
         item={it}
         selected={i === selectedIndex}
-        updateItem={(newX, newY, selected) =>
-          updateItem(i, newX, newY, selected)
-        }
+        updateItem={(newX, newY) => updateItem(i, newX, newY)}
+        collides={collidesList[i]}
+        items={items}
+        truck={truck}
       />
     ));
 
     return (
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
-          <Text text="Try click on rect" />
           <Truck_d truck={truck} />
           {itemComponents}
         </Layer>
