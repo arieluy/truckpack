@@ -30,7 +30,15 @@ class Item_d extends React.Component {
   };
 
   render() {
-    const { item, updateItem, selected, collides, items, truck } = this.props;
+    const {
+      item,
+      selectItem,
+      updateItem,
+      selected,
+      collides,
+      items,
+      truck
+    } = this.props;
     return (
       <Group>
         <Rect
@@ -39,6 +47,9 @@ class Item_d extends React.Component {
           width={item.width}
           height={item.length}
           fill={collides ? "red" : selected ? "yellow" : "#33b5e5"}
+          onClick={() => {
+            selectItem();
+          }}
           draggable
           onDragStart={() => {
             this.setState({
@@ -84,6 +95,7 @@ export default class Truck_stage extends React.Component {
     const {
       truck,
       items,
+      selectItem,
       updateItem,
       collidesList,
       selectedIndex
@@ -92,6 +104,7 @@ export default class Truck_stage extends React.Component {
       <Item_d
         item={it}
         selected={i === selectedIndex}
+        selectItem={() => selectItem(i)}
         updateItem={(newX, newY) => updateItem(i, newX, newY)}
         collides={collidesList[i]}
         items={items}

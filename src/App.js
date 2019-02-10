@@ -42,8 +42,8 @@ class App extends Component {
     return !(
       r2.x > r1.x + r1.width ||
       r2.x + r2.width < r1.x ||
-      r2.y > r1.y + r1.height ||
-      r2.y + r2.height < r1.y
+      r2.y > r1.y + r1.length ||
+      r2.y + r2.length < r1.y
     );
   };
 
@@ -61,6 +61,10 @@ class App extends Component {
     );
   };
 
+  selectItem = i => {
+    this.setState({ selectedIndex: i });
+  };
+
   updateItem = (i, newX, newY) => {
     const newState = [...this.state.items];
     const oldItem = newState[i];
@@ -73,7 +77,6 @@ class App extends Component {
         if (!(k === j)) {
           const r1 = newState[k];
           const r2 = newState[j];
-
           if (this.intersect(r1, r2)) {
             newCollidesList[j] = true;
             newCollidesList[k] = true;
@@ -155,25 +158,18 @@ class App extends Component {
     var selInd = this.state.selectedIndex;
     const item1 = newState[selInd];
     var item2 = item1;
-    var index2 = 0;
     for (let i = 0; i < newState.length; i++) {
       if (!(i === selInd)) {
         const r1 = item1;
         const r2 = newState[i];
-        var intersect = !(
-          r2.x > r1.x + r1.width ||
-          r2.x + r2.width < r1.x ||
-          r2.y > r1.y + r1.length ||
-          r2.y + r2.length < r1.y
-        );
-        if (intersect) {
+        if (this.intersect(r1, r2)) {
           item2 = r2;
-          index2 = i;
+          var index2 = i;
           break;
         }
       }
     }
-    if (item1 !== item2) {
+    if (item1 !== item2 && index2 !== undefined) {
       console.log("stacking!");
       const stackItem = new Item(
         Math.max(item1.length, item2.length),
@@ -203,26 +199,34 @@ class App extends Component {
     event.preventDefault();
     const oldItemState = [...this.state.items];
     const itemToRemove = oldItemState[this.state.selectedIndex];
-    {
-      /*if (itemToRemove === undefined) error("Select item to remove");*/
-    }
-    const nameToRemove = itemToRemove.name;
-    const newX = itemToRemove.x;
-    const newY = itemToRemove.y;
-    oldItemState.splice(this.state.selectedIndex, 1);
-    const oldStackState = [...this.state.stacks];
-    var index = 0;
-    for (let i = 0; i < oldStackState.length; i++) {
-      const stackItem = oldStackState[i];
-      if (stackItem.name === nameToRemove) index = i;
-    }
-    const stackIt = oldStackState[index];
+    if (itemToRemove !== undefined) {
+      const nameToRemove = itemToRemove.name;
+      const newX = itemToRemove.x;
+      const newY = itemToRemove.y;
+      oldItemState.splice(this.state.selectedIndex, 1);
+      const oldStackState = [...this.state.stacks];
+      for (let i = 0; i < oldStackState.length; i++) {
+        const stackItem = oldStackState[i];
+        if (stackItem.name === nameToRemove) var index = i;
+      }
+      if (index !== undefined) {
+        const stackIt = oldStackState[index];
 
-    const newIt1 = this.moveItem(stackIt.item1, itemToRemove.x, itemToRemove.y);
-    const newIt2 = this.moveItem(stackIt.item2, itemToRemove.x, itemToRemove.y);
-    const newItemState = [...oldItemState, newIt1, newIt2];
-    oldStackState.splice(index, 1);
-    this.setState({ stacks: oldStackState, items: newItemState });
+        const newIt1 = this.moveItem(
+          stackIt.item1,
+          itemToRemove.x,
+          itemToRemove.y
+        );
+        const newIt2 = this.moveItem(
+          stackIt.item2,
+          itemToRemove.x,
+          itemToRemove.y
+        );
+        const newItemState = [...oldItemState, newIt1, newIt2];
+        oldStackState.splice(index, 1);
+        this.setState({ stacks: oldStackState, items: newItemState });
+      }
+    }
   }
 
   render() {
@@ -268,6 +272,7 @@ class App extends Component {
                   <Truck_stage
                     truck={this.state.truck}
                     items={this.state.items}
+                    selectItem={this.selectItem}
                     updateItem={this.updateItem}
                     selectedIndex={this.state.selectedIndex}
                     collidesList={this.state.collidesList}
@@ -352,17 +357,7 @@ class App extends Component {
               </Card>
               <Card className="moditem">
                 <Card.Header as="h5">Modify Item</Card.Header>
-                <Card.Body>
-                  <Form onSubmit={e => this.handleItemRemove(e)}>
-                    <Row>
-                      <Col>
-                        <Button variant="danger" type="submit" block>
-                          Remove Item
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Card.Body>
+
                 <Card.Body>
                   <Form onSubmit={e => this.handleItemRotate(e)}>
                     <Row>
@@ -391,6 +386,17 @@ class App extends Component {
                       <Col>
                         <Button variant="primary" type="submit" block>
                           Unstack
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+                <Card.Body>
+                  <Form onSubmit={e => this.handleItemRemove(e)}>
+                    <Row>
+                      <Col>
+                        <Button variant="danger" type="submit" block>
+                          Remove Item
                         </Button>
                       </Col>
                     </Row>
