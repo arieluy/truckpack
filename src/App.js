@@ -4,6 +4,7 @@ import { Stage, Layer, Rect, Text, Group } from "react-konva";
 import Konva from "konva";
 import Item from "./Item";
 import Truck from "./Truck";
+import ItStack from "./ItStack";
 import Truck_stage from "./Truck_stage";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -25,6 +26,7 @@ const item = new Item(100, 100, 100, 10, 10, 10, "item", "red", true);
 items.push(item);
 const inventory = [];
 const collidesList = [false];
+const stacks = [];
 
 class App extends Component {
   state = {
@@ -32,10 +34,11 @@ class App extends Component {
     items: items,
     selectedIndex: 0,
     collidesList: collidesList,
-    inventory: inventory
+    inventory: inventory,
+    stacks: stacks
   };
 
-  collides = (r1, r2) => {
+  intersect = (r1, r2) => {
     return !(
       r2.x > r1.x + r1.width ||
       r2.x + r2.width < r1.x ||
@@ -43,10 +46,9 @@ class App extends Component {
       r2.y + r2.height < r1.y
     );
   };
-  updateItem = (i, newX, newY) => {
-    const newState = [...this.state.items];
-    const oldItem = newState[i];
-    const newItem = new Item(
+
+  moveItem = (oldItem, newX, newY) => {
+    return new Item(
       oldItem.length,
       oldItem.width,
       oldItem.height,
@@ -57,6 +59,12 @@ class App extends Component {
       oldItem.color,
       oldItem.stackable
     );
+  };
+
+  updateItem = (i, newX, newY) => {
+    const newState = [...this.state.items];
+    const oldItem = newState[i];
+    const newItem = this.moveItem(oldItem, newX, newY);
     newState[i] = newItem;
     this.setState({ items: newState, selectedIndex: i });
     const newCollidesList = [...this.state.collidesList].map(it => false);
@@ -65,13 +73,8 @@ class App extends Component {
         if (!(k === j)) {
           const r1 = newState[k];
           const r2 = newState[j];
-          var intersect = !(
-            r2.x > r1.x + r1.width ||
-            r2.x + r2.width < r1.x ||
-            r2.y > r1.y + r1.length ||
-            r2.y + r2.length < r1.y
-          );
-          if (intersect) {
+
+          if (this.intersect(r1, r2)) {
             newCollidesList[j] = true;
             newCollidesList[k] = true;
             break;
@@ -125,6 +128,101 @@ class App extends Component {
     const newState = [...this.state.items];
     newState.splice(this.state.selectedIndex, 1);
     this.setState({ items: newState });
+  }
+
+  handleItemRotate(event) {
+    event.preventDefault();
+    const newState = [...this.state.items];
+    const oldItem = newState[this.state.selectedIndex];
+    const newItem = new Item(
+      oldItem.width,
+      oldItem.length,
+      oldItem.height,
+      oldItem.x,
+      oldItem.y,
+      oldItem.z,
+      oldItem.name,
+      oldItem.color,
+      oldItem.stackable
+    );
+    newState[this.state.selectedIndex] = newItem;
+    this.setState({ items: newState });
+  }
+
+  handleStack(event) {
+    event.preventDefault();
+    const newState = [...this.state.items];
+    var selInd = this.state.selectedIndex;
+    const item1 = newState[selInd];
+    var item2 = item1;
+    var index2 = 0;
+    for (let i = 0; i < newState.length; i++) {
+      if (!(i === selInd)) {
+        const r1 = item1;
+        const r2 = newState[i];
+        var intersect = !(
+          r2.x > r1.x + r1.width ||
+          r2.x + r2.width < r1.x ||
+          r2.y > r1.y + r1.length ||
+          r2.y + r2.length < r1.y
+        );
+        if (intersect) {
+          item2 = r2;
+          index2 = i;
+          break;
+        }
+      }
+    }
+    if (item1 !== item2) {
+      console.log("stacking!");
+      const stackItem = new Item(
+        Math.max(item1.length, item2.length),
+        Math.max(item1.width, item2.width),
+        item1.height + item2.height,
+        item2.x,
+        item2.y,
+        item2.z,
+        item1.name + "+" + item2.name,
+        false
+      );
+      const newStack = new ItStack(item1.name + "+" + item2.name, item1, item2);
+      const newStackState = [...this.state.stacks, newStack];
+      if (selInd > index2) {
+        newState.splice(selInd, 1);
+        newState.splice(index2, 1);
+      } else {
+        newState.splice(index2, 1);
+        newState.splice(selInd, 1);
+      }
+
+      this.setState({ stacks: newStackState, items: [...newState, stackItem] });
+    }
+  }
+
+  handleUnstack(event) {
+    event.preventDefault();
+    const oldItemState = [...this.state.items];
+    const itemToRemove = oldItemState[this.state.selectedIndex];
+    {
+      /*if (itemToRemove === undefined) error("Select item to remove");*/
+    }
+    const nameToRemove = itemToRemove.name;
+    const newX = itemToRemove.x;
+    const newY = itemToRemove.y;
+    oldItemState.splice(this.state.selectedIndex, 1);
+    const oldStackState = [...this.state.stacks];
+    var index = 0;
+    for (let i = 0; i < oldStackState.length; i++) {
+      const stackItem = oldStackState[i];
+      if (stackItem.name === nameToRemove) index = i;
+    }
+    const stackIt = oldStackState[index];
+
+    const newIt1 = this.moveItem(stackIt.item1, itemToRemove.x, itemToRemove.y);
+    const newIt2 = this.moveItem(stackIt.item2, itemToRemove.x, itemToRemove.y);
+    const newItemState = [...oldItemState, newIt1, newIt2];
+    oldStackState.splice(index, 1);
+    this.setState({ stacks: oldStackState, items: newItemState });
   }
 
   render() {
@@ -252,14 +350,47 @@ class App extends Component {
                   </Form>
                 </Card.Body>
               </Card>
-              <Card className="remitem">
-                <Card.Header as="h5">Remove Item</Card.Header>
+              <Card className="moditem">
+                <Card.Header as="h5">Modify Item</Card.Header>
                 <Card.Body>
                   <Form onSubmit={e => this.handleItemRemove(e)}>
                     <Row>
                       <Col>
                         <Button variant="danger" type="submit" block>
                           Remove Item
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+                <Card.Body>
+                  <Form onSubmit={e => this.handleItemRotate(e)}>
+                    <Row>
+                      <Col>
+                        <Button variant="primary" type="submit" block>
+                          Rotate Item
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+                <Card.Body>
+                  <Form onSubmit={e => this.handleStack(e)}>
+                    <Row>
+                      <Col>
+                        <Button variant="primary" type="submit" block>
+                          Stack
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+                <Card.Body>
+                  <Form onSubmit={e => this.handleUnstack(e)}>
+                    <Row>
+                      <Col>
+                        <Button variant="primary" type="submit" block>
+                          Unstack
                         </Button>
                       </Col>
                     </Row>
