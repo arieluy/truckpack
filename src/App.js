@@ -16,13 +16,15 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import ListGroup from "react-bootstrap/ListGroup";
+import { myState } from "./New";
 
 const INCH_TO_PIXEL = 5;
 const ITEM_COL = "#33b5e5";
+var DOWNLOAD_LINK = "#";
 
 const items = [];
 const truck = new Truck(2 * 240, 2 * 96, 2 * 84, items);
-const item = new Item(100, 100, 100, 10, 10, 10, "item", "red", true);
+const item = new Item(100, 100, 100, 10, 10, 10, "item", "grey", true);
 items.push(item);
 const inventory = [];
 const collidesList = [false];
@@ -111,6 +113,7 @@ class App extends Component {
     const l = Number(form.elements[1].value);
     const w = Number(form.elements[2].value);
     const h = Number(form.elements[3].value);
+    const color = form.elements[4].value;
     const newItem = new Item(
       INCH_TO_PIXEL * l,
       INCH_TO_PIXEL * w,
@@ -119,7 +122,7 @@ class App extends Component {
       20,
       0,
       name,
-      ITEM_COL,
+      color,
       false
     );
     const newState = [...this.state.inventory, newItem];
@@ -179,6 +182,7 @@ class App extends Component {
         item2.y,
         item2.z,
         item1.name + "+" + item2.name,
+        item1.color,
         false
       );
       const newStack = new ItStack(item1.name + "+" + item2.name, item1, item2);
@@ -229,6 +233,22 @@ class App extends Component {
     }
   }
 
+  handleFileSave(event) {
+    event.preventDefault();
+    var json = JSON.stringify(this.state);
+    json = json.replace(/\"([^(\")"]+)\":/g, "$1:");
+    json = "const myState =" + json + "\nexport {myState};";
+    var blob = new Blob([json], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+
+    DOWNLOAD_LINK = url;
+  }
+
+  handleFileLoad(event) {
+    event.preventDefault();
+    this.setState(myState);
+  }
+
   render() {
     const inventoryComponents = this.state.inventory.map((it, i) => (
       <ListGroup.Item
@@ -260,8 +280,67 @@ class App extends Component {
             <Col md={3}>
               <Card className="items">
                 <Card.Header as="h5">Items</Card.Header>
+
                 <Card.Body>
                   <ListGroup variant="flush">{inventoryComponents}</ListGroup>
+                </Card.Body>
+              </Card>
+              <Card className="additem">
+                <Card.Header as="h5">Add Item</Card.Header>
+                <Card.Body>
+                  <Form onSubmit={e => this.handleItemSubmit(e)}>
+                    <Row>
+                      <Col>
+                        <Form.Group controlId="itemName">
+                          <Form.Control type="input" placeholder="Name" />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Form.Group controlId="itemL">
+                          <Form.Control type="input" placeholder="L" />
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group controlId="itemW">
+                          <Form.Control type="input" placeholder="W" />
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group controlId="itemH">
+                          <Form.Control type="input" placeholder="H" />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Form.Group controlId="itemColor">
+                          <label>
+                            Color:
+                            <select
+                              value={this.state.value}
+                              onChange={this.handleChange}
+                            >
+                              <option value="grey">Grey</option>
+                              <option value="orange">Orange</option>
+                              <option value="green">Green</option>
+                              <option value="cyan">Blue</option>
+                              <option value="purple">Purple</option>
+                              <option value="white">White</option>
+                            </select>
+                          </label>
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Button variant="primary" type="submit" block>
+                          Add Item
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
                 </Card.Body>
               </Card>
             </Col>
@@ -317,44 +396,7 @@ class App extends Component {
                   </Card.Text>
                 </Card.Body>
               </Card>
-              <Card className="additem">
-                <Card.Header as="h5">Add Item</Card.Header>
-                <Card.Body>
-                  <Form onSubmit={e => this.handleItemSubmit(e)}>
-                    <Row>
-                      <Col>
-                        <Form.Group controlId="itemName">
-                          <Form.Control type="input" placeholder="Name" />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        <Form.Group controlId="itemL">
-                          <Form.Control type="input" placeholder="L" />
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group controlId="itemW">
-                          <Form.Control type="input" placeholder="W" />
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group controlId="itemH">
-                          <Form.Control type="input" placeholder="H" />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        <Button variant="primary" type="submit" block>
-                          Add Item
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Card.Body>
-              </Card>
+
               <Card className="moditem">
                 <Card.Header as="h5">Modify Item</Card.Header>
 
@@ -401,6 +443,33 @@ class App extends Component {
                       </Col>
                     </Row>
                   </Form>
+                </Card.Body>
+              </Card>
+
+              <Card>
+                <Card.Header as="h5">File Save/Load</Card.Header>
+                <Card.Body>
+                  <Card.Text>
+                    <Form onSubmit={e => this.handleFileSave(e)}>
+                      <Row>
+                        <Col>
+                          <Button variant="primary" type="submit" block>
+                            Generate File
+                          </Button>
+                          <a href={DOWNLOAD_LINK}>Download File</a>
+                        </Col>
+                      </Row>
+                    </Form>
+                    <Form onSubmit={e => this.handleFileLoad(e)}>
+                      <Row>
+                        <Col>
+                          <Button variant="primary" type="submit" block>
+                            Load File
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Card.Text>
                 </Card.Body>
               </Card>
             </Col>

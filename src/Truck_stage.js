@@ -7,7 +7,7 @@ import Truck from "./Truck";
 
 class Truck_d extends React.Component {
   state = {
-    color: "#0074d9"
+    color: "#eeeeee"
   };
   render() {
     const { truck } = this.props;
@@ -18,6 +18,7 @@ class Truck_d extends React.Component {
         width={truck.width}
         height={truck.length}
         fill={this.state.color}
+        stroke="black"
         onClick={this.handleClick}
       />
     );
@@ -46,7 +47,9 @@ class Item_d extends React.Component {
           y={item.y}
           width={item.width}
           height={item.length}
-          fill={collides ? "red" : selected ? "yellow" : "#33b5e5"}
+          fill={item.color}
+          stroke={collides ? "red" : selected ? "yellow" : "black"}
+          strokeWidth={collides ? 10 : 3}
           onClick={() => {
             selectItem();
           }}
@@ -82,8 +85,8 @@ class Item_d extends React.Component {
         />
         <Text
           text={item.name}
-          x={item.x + item.width / 2}
-          y={item.y + item.length / 2}
+          x={item.x + item.width / 3}
+          y={item.y + item.height / 3}
         />
       </Group>
     );
