@@ -86,7 +86,7 @@ class Item_d extends React.Component {
         <Text
           text={item.name}
           x={item.x + item.width / 3}
-          y={item.y + item.height / 3}
+          y={item.y + item.length / 3}
         />
       </Group>
     );
