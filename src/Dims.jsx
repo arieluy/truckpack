@@ -11,6 +11,8 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import ListGroup from "react-bootstrap/ListGroup";
 import Truck from "./Truck";
 
+import PropTypes from "prop-types";
+
 const INCH_TO_PIXEL = 5;
 
 export default class Dims extends React.Component {
@@ -26,7 +28,7 @@ export default class Dims extends React.Component {
       INCH_TO_PIXEL * h,
       []
     );
-    this.setState({ truck: newTruck });
+    this.props.updateTruck(newTruck);
   }
 
   render() {
@@ -70,3 +72,7 @@ export default class Dims extends React.Component {
     );
   }
 }
+
+Dims.propTypes = {
+  updateTruck: PropTypes.func.isRequired
+};

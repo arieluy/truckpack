@@ -12,18 +12,20 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ItStack from "./ItStack";
 import Item from "./Item";
 
+import PropTypes from "prop-types";
+
 export default class ModifyItem extends Component {
   handleItemRemove(event) {
     event.preventDefault();
-    const newState = [...this.state.items];
-    newState.splice(this.state.selectedIndex, 1);
-    this.setState({ items: newState });
+    const newState = [...this.props.state.items];
+    newState.splice(this.props.state.selectedIndex, 1);
+    this.props.updateItems(newState);
   }
 
   handleItemRotate(event) {
     event.preventDefault();
-    const newState = [...this.state.items];
-    const oldItem = newState[this.state.selectedIndex];
+    const newState = [...this.props.state.items];
+    const oldItem = newState[this.props.state.selectedIndex];
     const newItem = new Item(
       oldItem.width,
       oldItem.length,
@@ -35,21 +37,21 @@ export default class ModifyItem extends Component {
       oldItem.color,
       oldItem.stackable
     );
-    newState[this.state.selectedIndex] = newItem;
-    this.setState({ items: newState });
+    newState[this.props.state.selectedIndex] = newItem;
+    this.props.updateItems(newState);
   }
 
   handleStack(event) {
     event.preventDefault();
-    const newState = [...this.state.items];
-    var selInd = this.state.selectedIndex;
+    const newState = [...this.props.state.items];
+    var selInd = this.props.state.selectedIndex;
     const item1 = newState[selInd];
     var item2 = item1;
     for (let i = 0; i < newState.length; i++) {
       if (!(i === selInd)) {
         const r1 = item1;
         const r2 = newState[i];
-        if (this.intersect(r1, r2)) {
+        if (this.props.intersect(r1, r2)) {
           item2 = r2;
           var index2 = i;
           break;
@@ -70,7 +72,7 @@ export default class ModifyItem extends Component {
         false
       );
       const newStack = new ItStack(item1.name + "+" + item2.name, item1, item2);
-      const newStackState = [...this.state.stacks, newStack];
+      const newStackState = [...this.props.state.stacks, newStack];
       if (selInd > index2) {
         newState.splice(selInd, 1);
         newState.splice(index2, 1);
@@ -79,20 +81,21 @@ export default class ModifyItem extends Component {
         newState.splice(selInd, 1);
       }
 
-      this.setState({ stacks: newStackState, items: [...newState, stackItem] });
+      this.props.updateItems([...newState, stackItem]);
+      this.props.updateStacks(newStackState);
     }
   }
 
   handleUnstack(event) {
     event.preventDefault();
-    const oldItemState = [...this.state.items];
-    const itemToRemove = oldItemState[this.state.selectedIndex];
+    const oldItemState = [...this.props.state.items];
+    const itemToRemove = oldItemState[this.props.state.selectedIndex];
     if (itemToRemove !== undefined) {
       const nameToRemove = itemToRemove.name;
       const newX = itemToRemove.x;
       const newY = itemToRemove.y;
-      oldItemState.splice(this.state.selectedIndex, 1);
-      const oldStackState = [...this.state.stacks];
+      oldItemState.splice(this.props.state.selectedIndex, 1);
+      const oldStackState = [...this.props.state.stacks];
       for (let i = 0; i < oldStackState.length; i++) {
         const stackItem = oldStackState[i];
         if (stackItem.name === nameToRemove) var index = i;
@@ -100,19 +103,20 @@ export default class ModifyItem extends Component {
       if (index !== undefined) {
         const stackIt = oldStackState[index];
 
-        const newIt1 = this.moveItem(
+        const newIt1 = this.props.moveItem(
           stackIt.item1,
           itemToRemove.x,
           itemToRemove.y
         );
-        const newIt2 = this.moveItem(
+        const newIt2 = this.props.moveItem(
           stackIt.item2,
           itemToRemove.x,
           itemToRemove.y
         );
         const newItemState = [...oldItemState, newIt1, newIt2];
         oldStackState.splice(index, 1);
-        this.setState({ stacks: oldStackState, items: newItemState });
+        this.props.updateItems(newItemState);
+        this.props.updateStacks(oldStackState);
       }
     }
   }
@@ -170,3 +174,11 @@ export default class ModifyItem extends Component {
     );
   }
 }
+
+ModifyItem.propTypes = {
+  state: PropTypes.object.isRequired,
+  updateItems: PropTypes.func.isRequired,
+  updateStacks: PropTypes.func.isRequired,
+  moveItem: PropTypes.func.isRequired,
+  intersect: PropTypes.func.isRequired
+};

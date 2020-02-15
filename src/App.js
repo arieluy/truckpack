@@ -95,6 +95,22 @@ class App extends Component {
     this.setState({ collidesList: newCollidesList });
   };
 
+  updateInventory = newState => {
+    this.setState({ inventory: newState });
+  };
+
+  updateTruck = newTruck => {
+    this.setState({ truck: newTruck });
+  };
+
+  updateItems = newItems => {
+    this.setState({ items: newItems });
+  };
+
+  updateStacks = newStacks => {
+    this.setState({ stacks: newStacks });
+  };
+
   render() {
     const inventoryComponents = this.state.inventory.map((it, i) => (
       <ListGroup.Item
@@ -131,7 +147,10 @@ class App extends Component {
                   <ListGroup variant="flush">{inventoryComponents}</ListGroup>
                 </Card.Body>
               </Card>
-              <Items state={this.state} setState={this.setState} />
+              <Items
+                state={this.state}
+                updateInventory={this.updateInventory}
+              />
             </Col>
 
             <Col md={6} className="truck">
@@ -150,9 +169,15 @@ class App extends Component {
               </Card>
             </Col>
             <Col md={3} className="dims">
-              <Dims />
-              <ModifyItem />
-              <Files />
+              <Dims updateTruck={this.updateTruck} />
+              <ModifyItem
+                state={this.state}
+                updateItems={this.updateItems}
+                updateStacks={this.updateStacks}
+                moveItem={this.moveItem}
+                intersect={this.intersect}
+              />
+              <Files state={this.state} setState={this.setState} />
             </Col>
           </Row>
         </Container>
