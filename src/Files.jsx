@@ -10,13 +10,14 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import ListGroup from "react-bootstrap/ListGroup";
 import { myState } from "./New";
+import PropTypes from "prop-types";
 
 var DOWNLOAD_LINK = "#";
 
 export default class Files extends Component {
   handleFileSave(event) {
     event.preventDefault();
-    var json = JSON.stringify(this.state);
+    var json = JSON.stringify(this.props.state);
     json = json.replace(/\"([^(\")"]+)\":/g, "$1:");
     json = "const myState =" + json + "\nexport {myState};";
     var blob = new Blob([json], { type: "application/json" });
@@ -27,7 +28,7 @@ export default class Files extends Component {
 
   handleFileLoad(event) {
     event.preventDefault();
-    this.setState(myState);
+    this.props.setState(myState);
   }
 
   render() {
@@ -61,3 +62,8 @@ export default class Files extends Component {
     );
   }
 }
+
+Files.propTypes = {
+  state: PropTypes.object.isRequired,
+  setState: PropTypes.func.isRequired
+};

@@ -35,7 +35,7 @@ export default class Items extends Component {
       false
     );
     const newState = [...this.props.state.inventory, newItem];
-    this.props.setState({ inventory: newState });
+    this.props.updateInventory(newState);
   }
 
   render() {
@@ -104,5 +104,5 @@ export default class Items extends Component {
 
 Items.propTypes = {
   state: PropTypes.object.isRequired,
-  setState: PropTypes.func.isRequired
+  updateInventory: PropTypes.func.isRequired
 };
