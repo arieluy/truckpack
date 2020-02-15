@@ -5,7 +5,7 @@
 
 
 class Item {
-    constructor(name, width, length, height, x, y, itemName) {
+    constructor(name, width, length, height, x, y, color, stackable) {
         this.width = width;
         this.length = length;
         this.height = height;
@@ -14,13 +14,19 @@ class Item {
 
         this.x = x;
         this.y = y;
+        this.z = 0;
 
-        this.name = itemName;
+        this.name = name;
+        this.stackable = stackable;
     }
 
     updateLocation(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    updateZPosition(z) {
+        this.z = z;
     }
 
     rotate() {
@@ -46,6 +52,13 @@ class ItemManager {
         );
     }
 
+    // Moves the item to a new index and checks it for collisions
+    // against all other items.
+    moveItemAtIndex(index, x, y) {
+        this.itemList[index].updateLocation(x, y);
+        this.checkItemForCollisions(index);
+    }
+
     updateTruckDims(x, y, z) {
         this.truckX = x;
         this.truckY = y;
@@ -66,6 +79,7 @@ class ItemManager {
         this.itemList[index].updateLocation(newX, newY);
     }
 
+    // Checks a certain item for collisions against all other items
     checkItemForCollisions(index) {
         let item1 = this.itemList[index];
         let collided = false;
