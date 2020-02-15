@@ -107,8 +107,8 @@ class App extends Component {
     this.setState({ items: newItems });
   };
 
-  updateStacks = newStacks => {
-    this.setState({ stacks: newStacks });
+  updateItemsandStacks = (newItems, newStacks) => {
+    this.setState({ items: newItems, stacks: newStacks });
   };
 
   render() {
@@ -173,7 +173,7 @@ class App extends Component {
               <ModifyItem
                 state={this.state}
                 updateItems={this.updateItems}
-                updateStacks={this.updateStacks}
+                updateItemsandStacks={this.updateItemsandStacks}
                 moveItem={this.moveItem}
                 intersect={this.intersect}
               />

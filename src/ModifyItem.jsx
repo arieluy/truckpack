@@ -81,8 +81,7 @@ export default class ModifyItem extends Component {
         newState.splice(selInd, 1);
       }
 
-      this.props.updateItems([...newState, stackItem]);
-      this.props.updateStacks(newStackState);
+      this.props.updateItemsandStacks([...newState, stackItem], newStackState);
     }
   }
 
@@ -115,8 +114,7 @@ export default class ModifyItem extends Component {
         );
         const newItemState = [...oldItemState, newIt1, newIt2];
         oldStackState.splice(index, 1);
-        this.props.updateItems(newItemState);
-        this.props.updateStacks(oldStackState);
+        this.props.updateItemsandStacks(newItemState, oldStackState);
       }
     }
   }
@@ -178,7 +176,7 @@ export default class ModifyItem extends Component {
 ModifyItem.propTypes = {
   state: PropTypes.object.isRequired,
   updateItems: PropTypes.func.isRequired,
-  updateStacks: PropTypes.func.isRequired,
+  updateItemsandStacks: PropTypes.func.isRequired,
   moveItem: PropTypes.func.isRequired,
   intersect: PropTypes.func.isRequired
 };

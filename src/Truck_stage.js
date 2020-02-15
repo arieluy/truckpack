@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import { Stage, Layer, Rect, Text, Group } from "react-konva";
+import { Stage, Layer, Rect, Text, Group, Label, Tag } from "react-konva";
 import Konva from "konva";
 import Item from "./Item";
 import Truck from "./Truck";
@@ -41,54 +41,57 @@ class Item_d extends React.Component {
       truck
     } = this.props;
     return (
-      <Group>
-        <Rect
-          x={item.x}
-          y={item.y}
-          width={item.width}
-          height={item.length}
-          fill={item.color}
-          stroke={collides ? "red" : selected ? "yellow" : "black"}
-          strokeWidth={collides ? 10 : 3}
-          onClick={() => {
-            selectItem();
-          }}
-          draggable
-          onDragStart={() => {
-            this.setState({
-              isDragging: true
-            });
-          }}
-          onDragEnd={e => {
-            updateItem(e.target.x(), e.target.y());
-            this.setState({
-              isDragging: false
-            });
-          }}
-          dragBoundFunc={pos => {
-            const newX =
-              pos.x > truck.width - item.width
-                ? truck.width - item.width
-                : pos.x < 0
-                ? 0
-                : pos.x;
+      //<Group>
+      <Label
+        x={item.x}
+        y={item.y}
+        width={50} //{item.width}
+        height={50} //{item.length}
+        //stroke={collides ? "red" : selected ? "yellow" : "black"}
+        //strokeWidth={collides ? 10 : 3}
+        onClick={() => {
+          selectItem();
+        }}
+        draggable
+        onDragStart={() => {
+          this.setState({
+            isDragging: true
+          });
+        }}
+        onDragEnd={e => {
+          updateItem(e.target.x(), e.target.y());
+          this.setState({
+            isDragging: false
+          });
+        }}
+        dragBoundFunc={pos => {
+          const newX =
+            pos.x > truck.width - item.width
+              ? truck.width - item.width
+              : pos.x < 0
+              ? 0
+              : pos.x;
 
-            const newY =
-              pos.y > truck.length - item.length
-                ? truck.length - item.length
-                : pos.y < 0
-                ? 0
-                : pos.y;
+          const newY =
+            pos.y > truck.length - item.length
+              ? truck.length - item.length
+              : pos.y < 0
+              ? 0
+              : pos.y;
 
-            return { x: newX, y: newY };
-          }}
-        />
+          return { x: newX, y: newY };
+        }}
+      >
+        <Tag fill={item.color} width={item.width} height={item.length} />
         <Text
           text={item.name}
-          x={item.x + item.width / 3}
-          y={item.y + item.length / 3}
+          verticalAlign="middle"
+          align="center"
+          width={item.width}
+          height={item.length}
         />
-      </Group>
+      </Label>
+      //</Group>
     );
   }
 }
