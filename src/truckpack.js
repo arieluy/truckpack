@@ -114,10 +114,12 @@ export class ItemManager {
     // Updates the location of an item at a particular index. 
     updateItem(index, newX, newY) {
         this.itemList[index].updateLocation(newX, newY);
+        this.checkItemForCollisions(index);
     }
 
     // Checks a certain item for collisions against all other items
     checkItemForCollisions(index) {
+        console.log("checking for collisions");
         let item1 = this.itemList[index];
         let collided = false;
         for (let i = 0; i < this.itemList.length; i++) {
@@ -132,10 +134,12 @@ export class ItemManager {
             }
         }
         this.collidesList[index] = collided;
+        console.log(this.collidesList);
     }
 
     // Stacks two items and adds the new StackedItem to the list.
     stackItems(index1, index2) {
+        console.log("stacking items");
         let item1 = this.itemList[index1];
         let item2 = this.itemList[index2];
 
@@ -147,14 +151,23 @@ export class ItemManager {
         // create new item
         let stackedItem = new StackedItem(item1, item2);
         // take old items out of the list and replace with new stacked item
+        console.log(this.itemList);
         this.removeItem(index1);
-        this.removeItem(index2);
+        // need to do some extra logic to remove right index
+        if (index2 > index1) {
+            // will have shifted by 1
+            this.removeItem(index2 - 1);
+        } else {
+            this.removeItem(index2)
+        }
         this.addItem(stackedItem);
+        console.log(this.itemList);
     }
 
     unstackItems(stackedIndex) {
         // get the stacked item
         let stackedItem = this.itemList[stackedIndex];
+        console.log(stackedItem);
         let items = stackedItem.unstack();
         this.removeItem(stackedIndex);
         this.addItem(items.item1);

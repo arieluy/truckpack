@@ -101,6 +101,7 @@ export default class TruckStage extends Component {
     } = this.props;
     const itemComponents = items.map((it, i) => (
       <ItemD
+        key={i}
         item={it}
         selected={i === selectedIndex}
         selectItem={() => selectItem(i)}

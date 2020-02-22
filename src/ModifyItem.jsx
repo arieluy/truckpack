@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 export default class ModifyItem extends Component {
   handleItemRemove(event) {
     event.preventDefault();
-    this.props.itemManager.removeItem(this.state.selectedIndex);
+    this.props.itemManager.removeItem(this.state.props.selectedIndex);
     this.props.updateItems();
   }
 
@@ -23,7 +23,7 @@ export default class ModifyItem extends Component {
   handleStack(event) {
     event.preventDefault();
     let itemManager = this.props.itemManager;
-    var selInd = this.state.selectedIndex;
+    var selInd = this.props.state.selectedIndex;
     const item1 = itemManager.itemList[selInd];
     // finds the first intersecting square with the selected square and stacks
     // TODO what if multiple squares are stacked 
@@ -47,7 +47,7 @@ export default class ModifyItem extends Component {
 
   handleUnstack(event) {
     event.preventDefault();
-    this.props.itemManager.unstackItems(this.state.selectedIndex);
+    this.props.itemManager.unstackItems(this.props.state.selectedIndex);
     this.props.updateItems();
   }
 
@@ -108,4 +108,5 @@ export default class ModifyItem extends Component {
 ModifyItem.propTypes = {
   state: PropTypes.object.isRequired,
   updateItems: PropTypes.func.isRequired,
+  itemManager: PropTypes.object.isRequired
 };

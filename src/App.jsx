@@ -27,7 +27,6 @@ class App extends Component {
       renderedItems: [item],
       selectedIndex: 0,
       collidesList: [],
-      inventory: { "item": item },
       truckDims: {width: this.itemManager.truckX,
                   length: this.itemManager.truckY,
                   height: this.itemManager.truckZ}
@@ -45,7 +44,7 @@ class App extends Component {
   
 
   selectItem(i) {
-    console.log("Select items");
+    console.log("Selected item: " + i);
     this.setState({ selectedIndex: i });
   }
 
@@ -67,7 +66,11 @@ class App extends Component {
     this.itemManager.updateTruckDims(newTruck.width, 
                                 newTruck.length, 
                                 newTruck.height);
-    this.setState({ truckDims:  this.itemManager.truckDims});
+    this.setState({ truckDims: {
+        width: this.itemManager.truckX,
+        length: this.itemManager.truckY,
+        height: this.itemManager.truckZ
+    }});
   }
 
   updateItems() {
@@ -86,15 +89,18 @@ class App extends Component {
   render() {
     var inventoryComponents = [];
     var count = 0;
-    for (var itemName in this.state.inventory) {
-     inventoryComponents.push(<ListGroup.Item
+    for (let i = 0; i < this.state.renderedItems.length; i++) {
+      // TODO there is some selection weirdness here, need to fix
+      inventoryComponents.push(<ListGroup.Item
         action
+        active={this.state.selectedIndex === i}
+        key={count}
         href={"#" + count}
         onClick={() => {
-          this.addItem(this.state.inventory[itemName]);
+          this.selectItem(i);
         }}
       >
-        {itemName}
+        {this.state.renderedItems[i].name}
       </ListGroup.Item>
       );
      count += 1;
@@ -146,7 +152,7 @@ class App extends Component {
               <ModifyItem
                 state={this.state}
                 updateItems={this.updateItems}
-                moveItem={this.moveItem}
+                itemManager={this.itemManager}
               />
               <Files state={this.state} setState={this.setState} />
             </Col>
