@@ -4,7 +4,7 @@
  */
 
 
-class Item {
+export class Item {
     constructor(name, width, length, height, x, y, color, stackable) {
         this.width = width;
         this.length = length;
@@ -17,6 +17,8 @@ class Item {
         this.z = 0;
 
         this.name = name;
+
+        this.color = color;
         this.stackable = stackable;
     }
 
@@ -34,15 +36,42 @@ class Item {
     }
 };
 
-class ItemManager {
+class StackedItem extends Item {
+    constructor(item1, item2) {
+        super(item1.name+"+"+item2.name,
+                   Math.max(item1.width, item2.width),
+                   Math.max(item1.length, item2.length), 
+                   item1.height + item2.height,
+                   item2.x,
+                   item2.y,
+                   item1.color,
+                   false);
+        this.item1 = item1;
+        this.item2 = item2;
+        // TODO possibly need to update z position of something
+    }
+
+    unstack() {
+        // update item1, item2 original positions to be current pos
+        this.item1.updateLocation(this.x, this.y);
+        this.item2.updateLocation(this.x, this.y);
+        // return original items
+        return {item1: this.item1, 
+                item2: this.item2};
+    }
+}
+
+export class ItemManager {
     constructor(truckX, truckY, truckZ) {
         this.itemList = [];
         this.truckX = truckX;
         this.truckY = truckY;
         this.truckZ = truckZ;
         this.collidesList = [];
+        this.inventory = {};
     }
 
+    // Check if two items intersecting
     _intersect(item1, item2) {
         return !(
             item2.x > item1.x + item1.width ||
@@ -59,22 +88,30 @@ class ItemManager {
         this.checkItemForCollisions(index);
     }
 
+    // Updates the dimensions of the truck.
     updateTruckDims(x, y, z) {
         this.truckX = x;
         this.truckY = y;
         this.truckZ = z;
     }
 
+    // Adds an item to the truck and checks it for collisions.
     addItem(item) {
         this.itemList.push(item);
         this.collidesList.push(false);
         this.checkItemForCollisions(this.itemList.length - 1);
+        // add to inventory
+        if (!(item.name in this.inventory)) {
+            this.inventory[item.name] = item;
+        }
     }
 
+    // Removes an item from the ItemManager.
     removeItem(index) {
         this.itemList.splice(index, 1);
     }
 
+    // Updates the location of an item at a particular index. 
     updateItem(index, newX, newY) {
         this.itemList[index].updateLocation(newX, newY);
     }
@@ -97,9 +134,31 @@ class ItemManager {
         this.collidesList[index] = collided;
     }
 
-};
+    // Stacks two items and adds the new StackedItem to the list.
+    stackItems(index1, index2) {
+        let item1 = this.itemList[index1];
+        let item2 = this.itemList[index2];
 
-module.exports = {
-    Item: Item,
-    ItemManager: ItemManager
+        // check if items can be stacked 
+        // would new item exceed height?
+        if (item1.z + item1.height + item2.height > this.truckZ) {
+            return null;
+        }
+        // create new item
+        let stackedItem = new StackedItem(item1, item2);
+        // take old items out of the list and replace with new stacked item
+        this.removeItem(index1);
+        this.removeItem(index2);
+        this.addItem(stackedItem);
+    }
+
+    unstackItems(stackedIndex) {
+        // get the stacked item
+        let stackedItem = this.itemList[stackedIndex];
+        let items = stackedItem.unstack();
+        this.removeItem(stackedIndex);
+        this.addItem(items.item1);
+        this.addItem(items.item2);
+    }
+
 };

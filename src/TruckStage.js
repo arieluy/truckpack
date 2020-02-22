@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import "./App.css";
 import { Stage, Layer, Rect, Text, Group } from "react-konva";
-import Konva from "konva";
-import Item from "./Item";
-import Truck from "./Truck";
 
-class Truck_d extends React.Component {
+class TruckD extends Component {
   state = {
     color: "#eeeeee"
   };
@@ -25,7 +22,7 @@ class Truck_d extends React.Component {
   }
 }
 
-class Item_d extends React.Component {
+class ItemD extends Component {
   state = {
     isDragging: false
   };
@@ -37,7 +34,6 @@ class Item_d extends React.Component {
       updateItem,
       selected,
       collides,
-      items,
       truck
     } = this.props;
     return (
@@ -93,7 +89,7 @@ class Item_d extends React.Component {
   }
 }
 
-export default class Truck_stage extends React.Component {
+export default class TruckStage extends Component {
   render() {
     const {
       truck,
@@ -104,7 +100,7 @@ export default class Truck_stage extends React.Component {
       selectedIndex
     } = this.props;
     const itemComponents = items.map((it, i) => (
-      <Item_d
+      <ItemD
         item={it}
         selected={i === selectedIndex}
         selectItem={() => selectItem(i)}
@@ -118,7 +114,7 @@ export default class Truck_stage extends React.Component {
     return (
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
-          <Truck_d truck={truck} />
+          <TruckD truck={truck} />
           {itemComponents}
         </Layer>
       </Stage>
