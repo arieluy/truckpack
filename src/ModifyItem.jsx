@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 export default class ModifyItem extends Component {
   handleItemRemove(event) {
     event.preventDefault();
-    this.props.itemManager.removeItem(this.state.props.selectedIndex);
+    this.props.itemManager.removeItem(this.props.state.selectedIndex);
     this.props.updateItems();
   }
 
@@ -32,6 +32,8 @@ export default class ModifyItem extends Component {
       if (i !== selInd) {
         const r1 = item1;
         const r2 = itemManager.itemList[i];
+        console.log(r1);
+        console.log(r2);
         if (itemManager._intersect(r1, r2)) {
           var index2 = i;
           break;
@@ -40,7 +42,11 @@ export default class ModifyItem extends Component {
     }
     if (index2 !== undefined) {
       console.log("stacking!");
-      itemManager.stackItems(selInd, index2);
+      if (itemManager.stackable(selInd, index2)) {
+        itemManager.stackItems(selInd, index2);
+      } else {
+        alert("These two items exceed the height of the truck!");
+      }
       this.props.updateItems();
     }
   }

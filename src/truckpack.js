@@ -45,7 +45,7 @@ class StackedItem extends Item {
                    item2.x,
                    item2.y,
                    item1.color,
-                   false);
+                   true);
         this.item1 = item1;
         this.item2 = item2;
         // TODO possibly need to update z position of something
@@ -109,6 +109,7 @@ export class ItemManager {
     // Removes an item from the ItemManager.
     removeItem(index) {
         this.itemList.splice(index, 1);
+        this.collidesList.splice(index, 1);
     }
 
     // Updates the location of an item at a particular index. 
@@ -172,6 +173,10 @@ export class ItemManager {
         this.removeItem(stackedIndex);
         this.addItem(items.item1);
         this.addItem(items.item2);
+    }
+
+    stackable(index1, index2) {
+        return (this.itemList[index1].height + this.itemList[index2].height < this.truckZ);
     }
 
 };

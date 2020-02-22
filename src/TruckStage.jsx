@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import { Stage, Layer, Rect, Text, Group } from "react-konva";
+import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
 
 class TruckD extends Component {
   state = {
@@ -26,7 +26,6 @@ class ItemD extends Component {
   state = {
     isDragging: false
   };
-
   render() {
     const {
       item,
@@ -37,15 +36,9 @@ class ItemD extends Component {
       truck
     } = this.props;
     return (
-      <Group>
-        <Rect
+        <Label
           x={item.x}
           y={item.y}
-          width={item.width}
-          height={item.length}
-          fill={item.color}
-          stroke={collides ? "red" : selected ? "yellow" : "black"}
-          strokeWidth={collides ? 10 : 3}
           onClick={() => {
             selectItem();
           }}
@@ -78,13 +71,22 @@ class ItemD extends Component {
 
             return { x: newX, y: newY };
           }}
-        />
-        <Text
-          text={item.name}
-          x={item.x + item.width / 3}
-          y={item.y + item.length / 3}
-        />
-      </Group>
+        >
+          <Tag 
+            fill={item.color}
+            stroke={collides ? "red" : selected ? "yellow" : "black"}
+            strokeWidth={collides ? 10 : 3}
+          />
+          <Text
+            width={item.width}
+            height={item.length}
+            text={item.name}
+            align={"center"}
+            verticalAlign={"middle"}
+            // x={item.x + item.width / 3}
+            // y={item.y + item.length / 3}
+          />
+        </Label>
     );
   }
 }

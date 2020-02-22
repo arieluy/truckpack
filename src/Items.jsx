@@ -8,6 +8,8 @@ import Card from "react-bootstrap/Card";
 import { Item } from "./truckpack";
 
 const INCH_TO_PIXEL = 5;
+const START_X = 20;
+const START_Y = 20;
 
 export default class Items extends Component {
   handleItemSubmit(event) {
@@ -23,10 +25,10 @@ export default class Items extends Component {
       INCH_TO_PIXEL * w,
       INCH_TO_PIXEL * l,
       INCH_TO_PIXEL * h,
-      20,
-      20,
+      START_X,
+      START_Y,
       color,
-      false
+      true
     );
     this.props.updateInventory(newItem);
   }

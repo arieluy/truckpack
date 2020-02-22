@@ -42,7 +42,6 @@ class App extends Component {
 
   }
   
-
   selectItem(i) {
     console.log("Selected item: " + i);
     this.setState({ selectedIndex: i });
@@ -75,7 +74,8 @@ class App extends Component {
 
   updateItems() {
     console.log("update items");
-    this.setState({ renderedItems: this.itemManager.itemList });
+    this.setState({ renderedItems: this.itemManager.itemList,
+                    collidesList: this.itemManager.collidesList });
   }
 
   addItem(item) {
@@ -121,7 +121,6 @@ class App extends Component {
             <Col md={3}>
               <Card className="items">
                 <Card.Header as="h5">Items</Card.Header>
-
                 <Card.Body>
                   <ListGroup variant="flush">{inventoryComponents}</ListGroup>
                 </Card.Body>
@@ -147,6 +146,7 @@ class App extends Component {
                 </Card.Body>
               </Card>
             </Col>
+
             <Col md={3} className="dims">
               <Dims updateTruck={this.updateTruck} />
               <ModifyItem
