@@ -15,14 +15,13 @@ import ModifyItem from "./ModifyItem";
 
 import {Item, ItemManager} from "./truckpack";
 
-
 class App extends Component {
   constructor(props) {
     super(props);
-
+    // TODO where do these starting dims come from? @auy
     this.itemManager = new ItemManager(2 * 96, 2 * 240, 2 * 84);
     const item = new Item("item", 100, 100, 100, 10, 10, "grey", true);
-    this.itemManager.addItem(item)
+    this.itemManager.addItem(item);
     this.state = {
       renderedItems: [item],
       selectedIndex: 0,
@@ -32,14 +31,14 @@ class App extends Component {
                   height: this.itemManager.truckZ}
     };
 
-    // Binding
+    // Binding - required to use functions throughout the program
     this.selectItem = this.selectItem.bind(this);
     this.updateItem = this.updateItem.bind(this);
     this.updateInventory = this.updateInventory.bind(this);
     this.updateTruck = this.updateTruck.bind(this);
     this.updateItems = this.updateItems.bind(this);
     this.addItem = this.addItem.bind(this);
-
+    this.loadFile = this.loadFile.bind(this);
   }
   
   selectItem(i) {
@@ -84,6 +83,11 @@ class App extends Component {
     this.setState({renderedItems: this.itemManager.itemList,
                    collidesList: this.itemManager.collidesList,
                    inventory: this.itemManager.inventory});
+  }
+
+  loadFile(state, itemManager) {
+    this.setState(state);
+    this.itemManager = itemManager;
   }
 
   render() {
@@ -154,7 +158,11 @@ class App extends Component {
                 updateItems={this.updateItems}
                 itemManager={this.itemManager}
               />
-              <Files state={this.state} setState={this.setState} />
+              <Files
+                state={this.state} 
+                itemManager={this.itemManager}
+                loadFile={this.loadFile}
+              />
             </Col>
           </Row>
         </Container>

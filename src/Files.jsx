@@ -6,25 +6,55 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import PropTypes from "prop-types";
 
-var DOWNLOAD_LINK = "#";
 
 export default class Files extends Component {
+  // Source: 
+  // https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
   handleFileSave(event) {
     event.preventDefault();
-    // var json = JSON.stringify(this.props.state);
-    // json = json.replace(/\"([^(\")"]+)\":/g, "$1:");
-    // json = "const myState =" + json + "\nexport {myState};";
-    // var blob = new Blob([json], { type: "application/json" });
-    // var url = URL.createObjectURL(blob);
+    const form = event.currentTarget;
+    let filename = form.elements[0].value;
+    // get JSON string obj from state, item manager
+    var json_obj = "data:text/json;charset=utf-8," + encodeURIComponent(
+                    JSON.stringify({itemManager: this.props.itemManager,
+                                    state: this.props.state}));
 
-    // DOWNLOAD_LINK = url;
-    alert("Re-implement me!");
+    var dlAnchorElem = document.getElementById('downloadAnchorElem');
+    dlAnchorElem.setAttribute("href", json_obj);
+    if (!filename.endsWith(".json")) {
+      filename = filename + ".json";
+    }
+    dlAnchorElem.setAttribute("download", filename);
+    dlAnchorElem.click();
+    alert("File saved successfully!");
   }
 
+  // Source: 
+  // https://stackoverflow.com/questions/36127648/uploading-a-json-file-and-using-it
   handleFileLoad(event) {
     event.preventDefault();
-    alert("Re-implement me!");
-    // this.props.setState(myState);
+    var files = document.getElementById('selectFiles').files;
+    if (files.length <= 0) {
+      alert("File not found!");
+      return false;
+    }
+    var fr = new FileReader();
+
+    // the magic happens here
+    const that = this;
+    fr.onload = function(e) {
+      console.log(e); 
+      var result = JSON.parse(e.target.result);
+      console.log(result); 
+      try {
+        that.props.loadFile(result.state, result.itemManager);
+        alert("File loaded successfully!");
+      } catch(err) {
+        alert("File not formatted correctly!");
+        console.log(err);
+      }
+    }
+    fr.readAsText(files.item(0));
   }
 
   render() {
@@ -35,16 +65,22 @@ export default class Files extends Component {
           <Form onSubmit={e => this.handleFileSave(e)}>
             <Row>
               <Col>
-                <Button variant="primary" type="submit" block>
-                  Generate File
-                </Button>
-                <a href={DOWNLOAD_LINK}>Download File</a>
+                <Form.Group controlId="fileSave">
+                  <Form.Label>File Name</Form.Label>
+                  <Form.Control type="input" placeholder="truckpack.json"/>
+                  <Button variant="primary" type="submit" block>
+                    Generate File
+                  </Button>
+                  {/* this is a bit of a hack to enable the ability to download files directly. */}
+                  <a id="downloadAnchorElem" style={{display:"none"}}></a> {/* eslint-disable-line */}
+                </Form.Group>
               </Col>
             </Row>
           </Form>
           <Form onSubmit={e => this.handleFileLoad(e)}>
             <Row>
-              <Col>
+              <Col>                
+                <input type="file" id="selectFiles" accept="application/json" />
                 <Button variant="primary" type="submit" block>
                   Load File
                 </Button>
@@ -52,6 +88,7 @@ export default class Files extends Component {
             </Row>
           </Form>
         </Card.Body>
+        
       </Card>
     );
   }
@@ -59,5 +96,6 @@ export default class Files extends Component {
 
 Files.propTypes = {
   state: PropTypes.object.isRequired,
-  setState: PropTypes.func.isRequired
+  itemManager: PropTypes.object.isRequired,
+  loadFile: PropTypes.func.isRequired
 };
