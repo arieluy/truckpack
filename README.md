@@ -1,3 +1,5 @@
+This project was created for CMU TartanHacks in 2019. See a short demo here: https://drive.google.com/file/d/1tbU_dI4xfkeTUM_tO7QW1rLfnKb6Ngk2/view?usp=sharing
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
