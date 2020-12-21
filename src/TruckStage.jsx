@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import "./App.css";
-import { Stage, Layer, Rect, Text, Group } from "react-konva";
-import Konva from "konva";
-import Item from "./Item";
-import Truck from "./Truck";
+import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
 
-class Truck_d extends React.Component {
+class TruckD extends Component {
   state = {
     color: "#eeeeee"
   };
@@ -25,11 +22,10 @@ class Truck_d extends React.Component {
   }
 }
 
-class Item_d extends React.Component {
+class ItemD extends Component {
   state = {
     isDragging: false
   };
-
   render() {
     const {
       item,
@@ -37,19 +33,12 @@ class Item_d extends React.Component {
       updateItem,
       selected,
       collides,
-      items,
       truck
     } = this.props;
     return (
-      <Group>
-        <Rect
+        <Label
           x={item.x}
           y={item.y}
-          width={item.width}
-          height={item.length}
-          fill={item.color}
-          stroke={collides ? "red" : selected ? "yellow" : "black"}
-          strokeWidth={collides ? 10 : 3}
           onClick={() => {
             selectItem();
           }}
@@ -82,18 +71,27 @@ class Item_d extends React.Component {
 
             return { x: newX, y: newY };
           }}
-        />
-        <Text
-          text={item.name}
-          x={item.x + item.width / 3}
-          y={item.y + item.height / 3}
-        />
-      </Group>
+        >
+          <Tag 
+            fill={item.color}
+            stroke={collides ? "red" : selected ? "yellow" : "black"}
+            strokeWidth={collides ? 10 : 3}
+          />
+          <Text
+            width={item.width}
+            height={item.length}
+            text={item.name}
+            align={"center"}
+            verticalAlign={"middle"}
+            // x={item.x + item.width / 3}
+            // y={item.y + item.length / 3}
+          />
+        </Label>
     );
   }
 }
 
-export default class Truck_stage extends React.Component {
+export default class TruckStage extends Component {
   render() {
     const {
       truck,
@@ -104,7 +102,8 @@ export default class Truck_stage extends React.Component {
       selectedIndex
     } = this.props;
     const itemComponents = items.map((it, i) => (
-      <Item_d
+      <ItemD
+        key={i}
         item={it}
         selected={i === selectedIndex}
         selectItem={() => selectItem(i)}
@@ -118,7 +117,7 @@ export default class Truck_stage extends React.Component {
     return (
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
-          <Truck_d truck={truck} />
+          <TruckD truck={truck} />
           {itemComponents}
         </Layer>
       </Stage>
