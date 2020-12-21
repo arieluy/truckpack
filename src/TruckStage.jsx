@@ -53,6 +53,7 @@ class ItemD extends Component {
             this.setState({
               isDragging: false
             });
+            selectItem();
           }}
           dragBoundFunc={pos => {
             const newX =

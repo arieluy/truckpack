@@ -17,6 +17,7 @@ export class Item {
         this.z = 0;
 
         this.name = name;
+        //this.id = this.getItemId();
 
         this.color = color;
         this.stackable = stackable;
@@ -33,6 +34,9 @@ export class Item {
 
     rotate() {
         this.rotated = !this.rotated;
+        var oldWidth = this.width;
+        this.width = this.length;
+        this.length = oldWidth;
     }
 };
 
@@ -95,15 +99,18 @@ export class ItemManager {
         this.truckZ = z;
     }
 
-    // Adds an item to the truck and checks it for collisions.
+    // Adds an item to inventory
+    createItem(item) {
+        if (!(item.name in this.inventory)) {
+            this.inventory[item.name] = item;
+        }
+    }
+
+    // Adds an item from inventory to the truck and checks it for collisions.
     addItem(item) {
         this.itemList.push(item);
         this.collidesList.push(false);
         this.checkItemForCollisions(this.itemList.length - 1);
-        // add to inventory
-        if (!(item.name in this.inventory)) {
-            this.inventory[item.name] = item;
-        }
     }
 
     // Removes an item from the ItemManager.
@@ -116,6 +123,10 @@ export class ItemManager {
     updateItem(index, newX, newY) {
         this.itemList[index].updateLocation(newX, newY);
         this.checkItemForCollisions(index);
+    }
+
+    rotateItem(index) {
+        this.itemList[index].rotate();
     }
 
     // Checks a certain item for collisions against all other items

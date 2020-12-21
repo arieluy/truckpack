@@ -21,6 +21,7 @@ class App extends Component {
     // TODO where do these starting dims come from? @auy
     this.itemManager = new ItemManager(2 * 96, 2 * 240, 2 * 84);
     const item = new Item("item", 100, 100, 100, 10, 10, "grey", true);
+    this.itemManager.createItem(item);
     this.itemManager.addItem(item);
     this.state = {
       renderedItems: [item],
@@ -28,7 +29,8 @@ class App extends Component {
       collidesList: [],
       truckDims: {width: this.itemManager.truckX,
                   length: this.itemManager.truckY,
-                  height: this.itemManager.truckZ}
+                  height: this.itemManager.truckZ},
+      inventory: {"item": item}
     };
 
     // Binding - required to use functions throughout the program
@@ -38,6 +40,7 @@ class App extends Component {
     this.updateTruck = this.updateTruck.bind(this);
     this.updateItems = this.updateItems.bind(this);
     this.addItem = this.addItem.bind(this);
+    this.createItem = this.createItem.bind(this);
     this.loadFile = this.loadFile.bind(this);
   }
   
@@ -53,10 +56,9 @@ class App extends Component {
   }
 
   updateInventory(newItem) {
-    console.log("UPdate inventory");
-    this.itemManager.addItem(newItem);
-    this.setState({ renderedItems: this.itemManager.itemList,
-                    inventory: this.itemManager.inventory });
+    console.log("Update inventory");
+    this.itemManager.createItem(newItem);
+    this.setState({ inventory: this.itemManager.inventory});
   };
 
   updateTruck(newTruck) {
@@ -77,12 +79,17 @@ class App extends Component {
                     collidesList: this.itemManager.collidesList });
   }
 
+  createItem(item) {
+    console.log("creating item");
+    this.itemManager.createItem(item);
+    this.setState({inventory: this.itemManager.inventory});
+  }
+
   addItem(item) {
     console.log("adding item");
     this.itemManager.addItem(item);
     this.setState({renderedItems: this.itemManager.itemList,
-                   collidesList: this.itemManager.collidesList,
-                   inventory: this.itemManager.inventory});
+                   collidesList: this.itemManager.collidesList});
   }
 
   loadFile(state, itemManager) {
@@ -93,7 +100,10 @@ class App extends Component {
   render() {
     var inventoryComponents = [];
     var count = 0;
-    for (let i = 0; i < this.state.renderedItems.length; i++) {
+    console.log("hi")
+    var itemNames = Object.keys(this.state.inventory);
+    for (let i = 0; i < itemNames.length; i++) {
+      console.log("hello")
       // TODO there is some selection weirdness here, need to fix
       inventoryComponents.push(<ListGroup.Item
         action
@@ -101,10 +111,10 @@ class App extends Component {
         key={count}
         href={"#" + count}
         onClick={() => {
-          this.selectItem(i);
+          this.addItem(this.state.inventory[itemNames[i]]);
         }}
       >
-        {this.state.renderedItems[i].name}
+        {itemNames[i]}
       </ListGroup.Item>
       );
      count += 1;
@@ -123,8 +133,8 @@ class App extends Component {
         <Container className="space">
           <Row>
             <Col md={3}>
-              <Card className="items">
-                <Card.Header as="h5">Items</Card.Header>
+              <Card className="inventory">
+                <Card.Header as="h5">Inventory</Card.Header>
                 <Card.Body>
                   <ListGroup variant="flush">{inventoryComponents}</ListGroup>
                 </Card.Body>

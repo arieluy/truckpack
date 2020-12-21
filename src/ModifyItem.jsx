@@ -16,7 +16,7 @@ export default class ModifyItem extends Component {
 
   handleItemRotate(event) {
     event.preventDefault();
-    this.props.itemManger.itemList[this.props.state.selectedIndex].rotate()
+    this.props.itemManager.rotateItem(this.props.state.selectedIndex);
     this.props.updateItems();
   }
 

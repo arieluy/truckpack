@@ -35,8 +35,8 @@ export default class Items extends Component {
 
   render() {
     return (
-      <Card className="additem">
-        <Card.Header as="h5">Add Item</Card.Header>
+      <Card className="createitem">
+        <Card.Header as="h5">Create Item</Card.Header>
         <Card.Body>
           <Form onSubmit={e => this.handleItemSubmit(e)}>
             <Row>
