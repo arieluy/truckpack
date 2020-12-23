@@ -107,7 +107,7 @@ class App extends Component {
       // TODO there is some selection weirdness here, need to fix
       inventoryComponents.push(<ListGroup.Item
         action
-        active={this.state.selectedIndex === i}
+        /*active={this.state.selectedIndex === i}*/
         key={count}
         href={"#" + count}
         onClick={() => {

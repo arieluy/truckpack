@@ -126,7 +126,19 @@ export class ItemManager {
     }
 
     rotateItem(index) {
-        this.itemList[index].rotate();
+        if (index >= 0 && index < this.itemList.length) {
+            // I have no idea why this works :(
+            // something about the indexing is messed up 
+            let oldItem = this.itemList[index];
+            oldItem.rotate();
+            this.removeItem(index);
+            let dummy = new Item("dummy", 0, 0, 0, 0, 0, "grey", false);
+            this.addItem(dummy);
+            this.addItem(oldItem);
+
+            // this is what I *want* the code to be, but it doesn't work:
+            // this.itemList[index].rotate();
+        }
     }
 
     // Checks a certain item for collisions against all other items
