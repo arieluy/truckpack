@@ -3,6 +3,8 @@
  * Manages the list of items for the truck packer.
  */
 
+import cloneDeep from 'lodash/cloneDeep';
+
 
 export class Item {
     constructor(name, width, length, height, x, y, color, stackable) {
@@ -37,6 +39,10 @@ export class Item {
         var oldWidth = this.width;
         this.width = this.length;
         this.length = oldWidth;
+    }
+
+    duplicate() {
+       return cloneDeep(this);
     }
 };
 
@@ -108,7 +114,7 @@ export class ItemManager {
 
     // Adds an item from inventory to the truck and checks it for collisions.
     addItem(item) {
-        this.itemList.push(item);
+        this.itemList.push(item.duplicate());
         this.collidesList.push(false);
         this.checkItemForCollisions(this.itemList.length - 1);
     }

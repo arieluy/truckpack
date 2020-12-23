@@ -17,6 +17,8 @@ export default class ModifyItem extends Component {
   handleItemRotate(event) {
     event.preventDefault();
     this.props.itemManager.rotateItem(this.props.state.selectedIndex);
+    // the next line is part of the stupid hacky fix
+    this.props.state.selectedIndex = this.props.state.renderedItems.length - 1;
     this.props.updateItems();
   }
 

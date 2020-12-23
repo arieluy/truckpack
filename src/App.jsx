@@ -12,6 +12,7 @@ import Items from "./Items";
 import Files from "./Files";
 import Dims from "./Dims";
 import ModifyItem from "./ModifyItem";
+import Inventory from "./Inventory";
 
 import {Item, ItemManager} from "./truckpack";
 
@@ -20,7 +21,7 @@ class App extends Component {
     super(props);
     // TODO where do these starting dims come from? @auy
     this.itemManager = new ItemManager(2 * 96, 2 * 240, 2 * 84);
-    const item = new Item("item", 100, 100, 100, 10, 10, "grey", true);
+    const item = new Item("item", 100, 70, 100, 10, 10, "grey", true);
     this.itemManager.createItem(item);
     this.itemManager.addItem(item);
     this.state = {
@@ -30,7 +31,8 @@ class App extends Component {
       truckDims: {width: this.itemManager.truckX,
                   length: this.itemManager.truckY,
                   height: this.itemManager.truckZ},
-      inventory: {"item": item}
+      inventory: {"item": item},
+      inventorySelected: "item" 
     };
 
     // Binding - required to use functions throughout the program
@@ -98,27 +100,6 @@ class App extends Component {
   }
 
   render() {
-    var inventoryComponents = [];
-    var count = 0;
-    console.log("hi")
-    var itemNames = Object.keys(this.state.inventory);
-    for (let i = 0; i < itemNames.length; i++) {
-      console.log("hello")
-      // TODO there is some selection weirdness here, need to fix
-      inventoryComponents.push(<ListGroup.Item
-        action
-        /*active={this.state.selectedIndex === i}*/
-        key={count}
-        href={"#" + count}
-        onClick={() => {
-          this.addItem(this.state.inventory[itemNames[i]]);
-        }}
-      >
-        {itemNames[i]}
-      </ListGroup.Item>
-      );
-     count += 1;
-    }
     return (
       <div className="App">
         <link
@@ -133,12 +114,11 @@ class App extends Component {
         <Container className="space">
           <Row>
             <Col md={3}>
-              <Card className="inventory">
-                <Card.Header as="h5">Inventory</Card.Header>
-                <Card.Body>
-                  <ListGroup variant="flush">{inventoryComponents}</ListGroup>
-                </Card.Body>
-              </Card>
+              <Inventory
+                state={this.state}
+                updateItems={this.updateItems}
+                itemManager={this.itemManager}
+              />
               <Items
                 state={this.state}
                 updateInventory={this.updateInventory}

@@ -86,7 +86,7 @@ export default class Items extends Component {
             <Row>
               <Col>
                 <Button variant="primary" type="submit" block>
-                  Add Item
+                  Create Item
                 </Button>
               </Col>
             </Row>

@@ -21,6 +21,9 @@ export default class Files extends Component {
 
     var dlAnchorElem = document.getElementById('downloadAnchorElem');
     dlAnchorElem.setAttribute("href", json_obj);
+    if (filename === "") {
+      filename = "truckpack"
+    }
     if (!filename.endsWith(".json")) {
       filename = filename + ".json";
     }
