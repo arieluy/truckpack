@@ -7,10 +7,6 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import { Item } from "./truckpack";
 
-const INCH_TO_PIXEL = 5;
-const START_X = 20;
-const START_Y = 20;
-
 export default class Items extends Component {
   handleItemSubmit(event) {
     event.preventDefault();
@@ -22,11 +18,9 @@ export default class Items extends Component {
     const color = form.elements[4].value;
     const newItem = new Item(
       name,
-      INCH_TO_PIXEL * w,
-      INCH_TO_PIXEL * l,
-      INCH_TO_PIXEL * h,
-      START_X,
-      START_Y,
+      w,
+      l,
+      h,
       color,
       true
     );

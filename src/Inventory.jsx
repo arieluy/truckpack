@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import csv from "jquery-csv";
 
 import PropTypes from "prop-types";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -18,6 +19,31 @@ export default class Inventory extends Component {
 
   selectInventoryItem(name) {
     this.props.state.inventorySelected = name;
+  }
+
+  handleImportInventory(event) {
+    event.preventDefault();
+    var files = document.getElementById('selectInventoryFiles').files;
+    console.log(files);
+    if (files.length <= 0) {
+      alert("File not found!");
+      return false;
+    }
+    var fr = new FileReader();
+
+    const that = this;
+    fr.onload = function(e) {
+      try {
+        var result = csv.toArrays(e.target.result);
+        console.log(result);
+        that.props.loadInventory(result);
+        alert("File loaded successfully!");
+      } catch(err) {
+        alert("File not formatted correctly!");
+        console.log(err);
+      }
+    }
+    fr.readAsText(files.item(0));
   }
 
   render() {
@@ -60,6 +86,19 @@ export default class Inventory extends Component {
           </Form>
         </Card.Body>
 
+        <Card.Body>
+          <Form onSubmit={e => this.handleImportInventory(e)}>
+            <Row>
+              <Col>                
+                <input type="file" id="selectInventoryFiles" />
+                <Button variant="primary" type="submit" block>
+                  Load Inventory File
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card.Body>
+
       </Card>
     );
   }
@@ -68,5 +107,6 @@ export default class Inventory extends Component {
 Inventory.propTypes = {
   state: PropTypes.object.isRequired,
   updateItems: PropTypes.func.isRequired,
-  itemManager: PropTypes.object.isRequired
+  itemManager: PropTypes.object.isRequired,
+  loadInventory: PropTypes.func.isRequired
 };

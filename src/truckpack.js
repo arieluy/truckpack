@@ -5,17 +5,20 @@
 
 import cloneDeep from 'lodash/cloneDeep';
 
+const INCH_TO_PIXEL = 5;
+const START_X = 20;
+const START_Y = 20;
 
 export class Item {
-    constructor(name, width, length, height, x, y, color, stackable) {
-        this.width = width;
-        this.length = length;
-        this.height = height;
+    constructor(name, width, length, height, color, stackable) {
+        this.width = INCH_TO_PIXEL * width;
+        this.length = INCH_TO_PIXEL * length;
+        this.height = INCH_TO_PIXEL * height;
 
         this.rotated = false;
 
-        this.x = x;
-        this.y = y;
+        this.x = START_X;
+        this.y = START_Y;
         this.z = 0;
 
         this.name = name;

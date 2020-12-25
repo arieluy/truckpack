@@ -21,7 +21,7 @@ class App extends Component {
     super(props);
     // TODO where do these starting dims come from? @auy
     this.itemManager = new ItemManager(2 * 96, 2 * 240, 2 * 84);
-    const item = new Item("item", 100, 70, 100, 10, 10, "grey", true);
+    const item = new Item("item", 20, 15, 10, "grey", true);
     this.itemManager.createItem(item);
     this.itemManager.addItem(item);
     this.state = {
@@ -44,6 +44,7 @@ class App extends Component {
     this.addItem = this.addItem.bind(this);
     this.createItem = this.createItem.bind(this);
     this.loadFile = this.loadFile.bind(this);
+    this.loadInventory = this.loadInventory.bind(this);
   }
   
   selectItem(i) {
@@ -62,6 +63,22 @@ class App extends Component {
     this.itemManager.createItem(newItem);
     this.setState({ inventory: this.itemManager.inventory});
   };
+
+  // eventually fix this so that colors list is a constant somewhere
+  isValidColor(color) {
+    return ["grey", "orange", "green", "cyan", "purple", "white"].indexOf(color) > -1;
+  }
+
+  loadInventory(inv) {
+    for (let i = 0; i < inv.length; i++) {
+      var it = inv[i];
+      var color = it.length >= 5 && this.isValidColor(it[4]) ? it[4] : "grey";
+      var item = new Item(it[0], it[1], it[2], it[3], color, true);
+      this.itemManager.createItem(item);
+    }
+    console.log(this.itemManager.inventory);
+    this.setState({ inventory: this.itemManager.inventory});
+  }
 
   updateTruck(newTruck) {
     console.log("Update truck");
@@ -118,6 +135,7 @@ class App extends Component {
                 state={this.state}
                 updateItems={this.updateItems}
                 itemManager={this.itemManager}
+                loadInventory={this.loadInventory}
               />
               <Items
                 state={this.state}
