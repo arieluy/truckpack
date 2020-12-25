@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import csv from "jquery-csv";
+import "./Inventory.css";
 
 import PropTypes from "prop-types";
 import ListGroup from "react-bootstrap/ListGroup";

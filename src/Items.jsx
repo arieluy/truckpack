@@ -7,6 +7,8 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import { Item } from "./truckpack";
 
+const INCH_TO_PIXEL = 5;
+
 export default class Items extends Component {
   handleItemSubmit(event) {
     event.preventDefault();
@@ -16,7 +18,7 @@ export default class Items extends Component {
     const w = Number(form.elements[2].value);
     const h = Number(form.elements[3].value);
     const color = form.elements[4].value;
-    const newItem = new Item(
+    const newItem = this.props.itemManager.newInputItem(
       name,
       w,
       l,
@@ -93,5 +95,6 @@ export default class Items extends Component {
 
 Items.propTypes = {
   state: PropTypes.object.isRequired,
+  itemManager: PropTypes.object.isRequired,
   updateInventory: PropTypes.func.isRequired
 };

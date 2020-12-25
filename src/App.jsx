@@ -20,8 +20,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     // TODO where do these starting dims come from? @auy
-    this.itemManager = new ItemManager(2 * 96, 2 * 240, 2 * 84);
-    const item = new Item("item", 20, 15, 10, "grey", true);
+    this.itemManager = new ItemManager(92, 180, 86);
+    const item = this.itemManager.newInputItem("item", 20, 15, 10, "grey", true);
     this.itemManager.createItem(item);
     this.itemManager.addItem(item);
     this.state = {
@@ -73,7 +73,7 @@ class App extends Component {
     for (let i = 0; i < inv.length; i++) {
       var it = inv[i];
       var color = it.length >= 5 && this.isValidColor(it[4]) ? it[4] : "grey";
-      var item = new Item(it[0], it[1], it[2], it[3], color, true);
+      var item = this.itemManager.newInputItem(it[0], it[1], it[2], it[3], color, true);
       this.itemManager.createItem(item);
     }
     console.log(this.itemManager.inventory);
@@ -139,12 +139,13 @@ class App extends Component {
               />
               <Items
                 state={this.state}
+                itemManager={this.itemManager}
                 updateInventory={this.updateInventory}
               />
             </Col>
 
             <Col md={6} className="truck">
-              <Card>
+              <Card style={{height: 10000}}>
                 <Card.Header as="h5">Truck</Card.Header>
                 <Card.Body>
                   <TruckStage

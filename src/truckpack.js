@@ -11,9 +11,9 @@ const START_Y = 20;
 
 export class Item {
     constructor(name, width, length, height, color, stackable) {
-        this.width = INCH_TO_PIXEL * width;
-        this.length = INCH_TO_PIXEL * length;
-        this.height = INCH_TO_PIXEL * height;
+        this.width = width;
+        this.length = length;
+        this.height = height;
 
         this.rotated = false;
 
@@ -55,10 +55,11 @@ class StackedItem extends Item {
                    Math.max(item1.width, item2.width),
                    Math.max(item1.length, item2.length), 
                    item1.height + item2.height,
-                   item2.x,
-                   item2.y,
                    item1.color,
                    true);
+
+        this.x = item2.x;
+        this.y = item2.y;
         this.item1 = item1;
         this.item2 = item2;
         // TODO possibly need to update z position of something
@@ -77,9 +78,9 @@ class StackedItem extends Item {
 export class ItemManager {
     constructor(truckX, truckY, truckZ) {
         this.itemList = [];
-        this.truckX = truckX;
-        this.truckY = truckY;
-        this.truckZ = truckZ;
+        this.truckX = INCH_TO_PIXEL * truckX;
+        this.truckY = INCH_TO_PIXEL * truckY;
+        this.truckZ = INCH_TO_PIXEL * truckZ;
         this.collidesList = [];
         this.inventory = {};
     }
@@ -103,9 +104,19 @@ export class ItemManager {
 
     // Updates the dimensions of the truck.
     updateTruckDims(x, y, z) {
-        this.truckX = x;
-        this.truckY = y;
-        this.truckZ = z;
+        this.truckX = INCH_TO_PIXEL * x;
+        this.truckY = INCH_TO_PIXEL * y;
+        this.truckZ = INCH_TO_PIXEL * z;
+    }
+
+    newInputItem(name, inX, inY, inZ, color, stackable) {
+        return new Item(
+            name, 
+            INCH_TO_PIXEL * inX,
+            INCH_TO_PIXEL * inY,
+            INCH_TO_PIXEL * inZ,
+            color,
+            stackable);
     }
 
     // Adds an item to inventory
