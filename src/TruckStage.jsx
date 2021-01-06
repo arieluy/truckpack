@@ -116,7 +116,7 @@ export default class TruckStage extends Component {
     ));
 
     return (
-      <Stage width={window.innerWidth} height={window.innerHeight}>
+      <Stage width={truck.width} height={truck.length}>
         <Layer>
           <TruckD truck={truck} />
           {itemComponents}

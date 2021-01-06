@@ -145,9 +145,9 @@ class App extends Component {
             </Col>
 
             <Col md={6} className="truck">
-              <Card style={{height: 10000}}>
+              <Card style={{height: "100vh"}}>
                 <Card.Header as="h5">Truck</Card.Header>
-                <Card.Body>
+                <Card.Body style={{height: "calc(100% - 2.5rem)"}}>
                   <TruckStage
                     truck={this.state.truckDims}
                     items={this.state.renderedItems}
