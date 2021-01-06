@@ -7,8 +7,6 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import { Item } from "./truckpack";
 
-const INCH_TO_PIXEL = 5;
-
 export default class Items extends Component {
   handleItemSubmit(event) {
     event.preventDefault();

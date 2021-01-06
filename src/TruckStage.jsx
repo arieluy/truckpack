@@ -7,13 +7,13 @@ class TruckD extends Component {
     color: "#eeeeee"
   };
   render() {
-    const { truck } = this.props;
+    const { truck, scale } = this.props;
     return (
       <Rect
         x={0}
         y={0}
-        width={truck.width}
-        height={truck.length}
+        width={truck.width*scale}
+        height={truck.length*scale}
         fill={this.state.color}
         stroke="black"
         onClick={this.handleClick}
@@ -33,12 +33,13 @@ class ItemD extends Component {
       updateItem,
       selected,
       collides,
-      truck
+      truck,
+      scale
     } = this.props;
     return (
         <Label
-          x={item.x}
-          y={item.y}
+          x={item.x*scale}
+          y={item.y*scale}
           onClick={() => {
             selectItem();
           }}
@@ -57,15 +58,15 @@ class ItemD extends Component {
           }}
           dragBoundFunc={pos => {
             const newX =
-              pos.x > truck.width - item.width
-                ? truck.width - item.width
+              pos.x/scale > truck.width - item.width
+                ? (truck.width - item.width)*scale
                 : pos.x < 0
                 ? 0
                 : pos.x;
 
             const newY =
-              pos.y > truck.length - item.length
-                ? truck.length - item.length
+              pos.y/scale > truck.length - item.length
+                ? (truck.length - item.length)*scale
                 : pos.y < 0
                 ? 0
                 : pos.y;
@@ -79,8 +80,8 @@ class ItemD extends Component {
             strokeWidth={collides ? 10 : 3}
           />
           <Text
-            width={item.width}
-            height={item.length}
+            width={item.width*scale}
+            height={item.length*scale}
             text={item.name}
             align={"center"}
             verticalAlign={"middle"}
@@ -100,7 +101,8 @@ export default class TruckStage extends Component {
       selectItem,
       updateItem,
       collidesList,
-      selectedIndex
+      selectedIndex,
+      scale
     } = this.props;
     const itemComponents = items.map((it, i) => (
       <ItemD
@@ -112,13 +114,14 @@ export default class TruckStage extends Component {
         collides={collidesList[i]}
         items={items}
         truck={truck}
+        scale={scale}
       />
     ));
 
     return (
-      <Stage width={truck.width} height={truck.length}>
+      <Stage width={truck.width*scale} height={truck.length*scale}>
         <Layer>
-          <TruckD truck={truck} />
+          <TruckD truck={truck} scale={scale} />
           {itemComponents}
         </Layer>
       </Stage>
