@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import Dropdown from "react-bootstrap/Dropdown";
 import Navbar from "react-bootstrap/Navbar";
 import ListGroup from "react-bootstrap/ListGroup";
 
@@ -32,7 +33,8 @@ class App extends Component {
                   length: this.itemManager.truckY,
                   height: this.itemManager.truckZ},
       inventory: {"item": item},
-      inventorySelected: "item" 
+      inventorySelected: "item",
+      scale: 1
     };
 
     // Binding - required to use functions throughout the program
@@ -116,6 +118,10 @@ class App extends Component {
     this.itemManager = itemManager;
   }
 
+  setScale(newScale) {
+    this.setState({scale:newScale})
+  }
+
   render() {
     return (
       <div className="App">
@@ -145,9 +151,30 @@ class App extends Component {
             </Col>
 
             <Col md={6} className="truck">
-              <Card style={{height: 10000}}>
-                <Card.Header as="h5">Truck</Card.Header>
-                <Card.Body>
+              <Card style={{height: "100vh"}}>
+                <Card.Header as="h5">
+                  <div style={{display:"flex"}}>
+                    <div style={{flex:"1 1"}}>Truck</div>
+                    <div style={{flex: "1 1", textAlign:"right"}}>
+                      <Dropdown style={{display:"inline-block", flex:"1 1"}} onSelect={(scale) => this.setScale(scale)}>
+                        <Dropdown.Toggle id="dropdown-basic">
+                          Scale: {this.state.scale}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item eventKey="0.25">0.25</Dropdown.Item>
+                          <Dropdown.Item eventKey="0.5">0.5</Dropdown.Item>
+                          <Dropdown.Item eventKey="1">1.0</Dropdown.Item>
+                          <Dropdown.Item eventKey="1.5">1.5</Dropdown.Item>
+                          <Dropdown.Item eventKey="2">2</Dropdown.Item>
+                          <Dropdown.Item eventKey="3">3</Dropdown.Item>
+                          <Dropdown.Item eventKey="5">5</Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </div>
+                </Card.Header>
+                <Card.Body style={{height: "calc(100% - 2.5rem)"}}>
                   <TruckStage
                     truck={this.state.truckDims}
                     items={this.state.renderedItems}
@@ -155,6 +182,7 @@ class App extends Component {
                     updateItem={this.updateItem}
                     selectedIndex={this.state.selectedIndex}
                     collidesList={this.state.collidesList}
+                    scale={this.state.scale}
                   />
                 </Card.Body>
               </Card>
