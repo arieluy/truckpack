@@ -49,7 +49,7 @@ export class Item {
     }
 };
 
-class StackedItem extends Item {
+export class StackedItem extends Item {
     constructor(item1, item2) {
         super(item1.name+"+"+item2.name,
                    Math.max(item1.width, item2.width),

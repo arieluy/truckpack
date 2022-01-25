@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useDebugValue } from "react";
 import "./App.css";
 import TruckStage from "./TruckStage";
 import Container from "react-bootstrap/Container";
@@ -14,8 +14,10 @@ import Files from "./Files";
 import Dims from "./Dims";
 import ModifyItem from "./ModifyItem";
 import Inventory from "./Inventory";
+import Debug from "./Debug";
 
-import {Item, ItemManager} from "./truckpack";
+import {Item, StackedItem, ItemManager} from "./truckpack";
+const INCH_TO_PIXEL = 5;
 
 class App extends Component {
   constructor(props) {
@@ -113,9 +115,52 @@ class App extends Component {
                    collidesList: this.itemManager.collidesList});
   }
 
+  // relies on item being in the inventory
+  loadItem(oldItem) {
+    let newItem;
+    if (oldItem.name.indexOf("+") > 0) {
+      let item1 = this.loadItem(oldItem.item1);
+      let item2 = this.loadItem(oldItem.item2);
+      newItem = new StackedItem(item1, item2);
+    } else {
+      newItem = this.itemManager.inventory[oldItem.name].duplicate();
+    }
+    newItem.updateLocation(oldItem.x, oldItem.y);
+    if (oldItem.rotated) {
+      newItem.rotate();
+    }
+    return newItem;
+  }
+
   loadFile(state, itemManager) {
     this.setState(state);
-    this.itemManager = itemManager;
+    this.setState({ renderedItems: [], inventory: []});
+    this.itemManager.truckX = itemManager.truckX;
+    this.itemManager.truckY = itemManager.truckY;
+    this.itemManager.truckZ = itemManager.truckZ;
+    this.itemManager.inventory = {};
+
+    for (var oi in itemManager.inventory) {
+      var oldItem = itemManager.inventory[oi]
+      const newItem = this.itemManager.newInputItem(
+        oldItem.name,
+        oldItem.width / INCH_TO_PIXEL,
+        oldItem.length / INCH_TO_PIXEL,
+        oldItem.height / INCH_TO_PIXEL,
+        oldItem.color,
+        true
+      );
+      this.updateInventory(newItem);
+    }
+    console.log(this.itemManager.inventory);
+
+    this.itemManager.itemList = [];
+    for (let i = 0; i < itemManager.itemList.length; i++) {
+      let oldItem = itemManager.itemList[i];
+      let newItem = this.loadItem(oldItem);
+      this.addItem(newItem);
+      this.updateItems();
+    }
   }
 
   setScale(newScale) {
@@ -147,6 +192,10 @@ class App extends Component {
                 state={this.state}
                 itemManager={this.itemManager}
                 updateInventory={this.updateInventory}
+              />
+              <Debug
+                state={this.state}
+                itemManager={this.itemManager}
               />
             </Col>
 
