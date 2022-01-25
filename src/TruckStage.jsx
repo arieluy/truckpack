@@ -50,7 +50,7 @@ class ItemD extends Component {
             });
           }}
           onDragEnd={e => {
-            updateItem(e.target.x(), e.target.y());
+            updateItem(e.target.x()/scale, e.target.y()/scale);
             this.setState({
               isDragging: false
             });
